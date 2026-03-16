@@ -10,6 +10,12 @@ namespace AngryBomb3D
         STANDARD_1_KG = 1
     };
 
+    struct BulletCollisionInfo
+    {
+        bool firstCollisionHappened = false;
+        float collisionTime = 0.0f;
+    };
+
     class BulletSet
     {
     public:
@@ -24,21 +30,17 @@ namespace AngryBomb3D
         BulletType getType() const { return m_bulletType; }
         int getAvailableCount() const
         {
-            BR_ASSERT((m_bullets.size() - m_currentBulletIndex >= 0), "%s", " Available bullet count < 0.");
-            return m_bullets.size() - m_currentBulletIndex;
+            BR_ASSERT((m_bullets.size() - m_currentBulletIndexToShoot >= 0), "%s", " Available bullet count < 0.");
+            return m_bullets.size() - m_currentBulletIndexToShoot;
         }
-        bool getIsAnyBulletActive() const { return m_isAnyBulletActive; }
         bool getIsAnyBulletHasCollision() const { return m_anyBulletHasCollision; }
-        std::shared_ptr<Beryll::SimpleCollidingObject> getCurrentBullet() { return m_bullets[m_currentBulletIndex]; }
 
     private:
         BulletType m_bulletType = BulletType::NONE;
         std::vector<std::shared_ptr<Beryll::SimpleCollidingObject>> m_bullets;
-        int m_currentBulletIndex = 0;
-        bool m_isAnyBulletActive = false;
+        std::vector<BulletCollisionInfo> m_bulletsCollisionInfo;
+        int m_currentBulletIndexToShoot = 0;
         float m_disableTimeAfterCollision = 0.0f;
-        float m_collisionTime = 0.0f;
-        bool m_firstCollisionHappened = false;
         bool m_anyBulletHasCollision = false;
     };
 }

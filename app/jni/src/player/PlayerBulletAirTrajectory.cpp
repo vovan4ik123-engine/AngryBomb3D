@@ -45,14 +45,18 @@ namespace AngryBomb3D
         glm::vec3 previousToCurrent{0.0f};
         bool castRayBetweenPoints = false;
 
+        m_trajectoryHasHit = false;
+
         // Calculate some points on fly trajectory.
-        for(int i = 2; i <= 25; ++i)
+        for(int i = 0; i <= 80; ++i)
         {
-            throwDirXZPlane = normalizedImpulseVector * float(i * i) * 1.7f; // Point every float(i * i)... meters on trajectory !!! Not on ground !!!
-            if(i == 3)
-                throwDirXZPlane *= 1.05f;
-            else if(i == 4)
-                throwDirXZPlane *= 1.02f;
+            // Point every float(i * i)... meters on trajectory !!! Not on ground !!!
+            if(i == 0)
+                throwDirXZPlane = normalizedImpulseVector * 2.8f;
+            else if(i == 1)
+                throwDirXZPlane = normalizedImpulseVector * 8.0f;
+            else
+                throwDirXZPlane = normalizedImpulseVector * float(i * 7);
 
             throwDirXZPlane.y = 0.0f; // Do point projection on ground.
             XZDistance = glm::length(throwDirXZPlane);
@@ -83,9 +87,10 @@ namespace AngryBomb3D
 
                 if(hit)
                 {
+                    m_trajectoryHasHit = true;
                     m_trajectoryHitPoint->setOrigin(hit.hitPoint);
 
-                    float scaleFactor = 1.0f + glm::distance(startPosition, hit.hitPoint) / 350.0f; // Scale to + 100% size every 350m.
+                    float scaleFactor = 1.0f + glm::distance(startPosition, hit.hitPoint) / 400.0f; // Scale to + 100% size every 400m.
                     m_modelMatrix = m_trajectoryHitPoint->getModelMatrix() * glm::scale(glm::mat4{1.0f}, glm::vec3{scaleFactor});
                     m_shader->setMatrix4x4Float("modelMatrix", m_modelMatrix);
                     m_shader->setMatrix3x3Float("normalMatrix", glm::mat3(m_modelMatrix));
@@ -98,7 +103,7 @@ namespace AngryBomb3D
             // Draw.
             m_trajectoryPoint->setOrigin(currentPoint);
 
-            m_modelMatrix = m_trajectoryPoint->getModelMatrix();
+            m_modelMatrix = m_trajectoryPoint->getModelMatrix() * glm::scale(glm::mat4{1.0f}, glm::vec3{0.7f});
             m_shader->setMatrix4x4Float("modelMatrix", m_modelMatrix);
             m_shader->setMatrix3x3Float("normalMatrix", glm::mat3(m_modelMatrix));
             Beryll::Renderer::drawObject(m_trajectoryPoint, m_modelMatrix, m_shader);

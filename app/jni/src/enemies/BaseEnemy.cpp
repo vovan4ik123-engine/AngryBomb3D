@@ -31,13 +31,12 @@ namespace AngryBomb3D
         }
         else
         {
-            const auto points = Beryll::Physics::getAllCollisionPoints(m_obj->getID(),
-                                                                       Beryll::Physics::getAllCollisionsForID(m_obj->getID()));
+            const auto points = Beryll::Physics::getAllCollisionPoints(m_obj->getID(), Beryll::Physics::getAllCollisionsForID(m_obj->getID()));
 
-            const float enemyHeadPosY = (m_obj->getOrigin() + (m_obj->getFromOriginToTop() * 0.8f)).y;
+            const float enemyOriginY = m_obj->getOrigin().y;
             for(const auto& point : points)
             {
-                if(point.first.y > enemyHeadPosY)
+                if(point.first.y > enemyOriginY)
                 {
                     die();
                     break;

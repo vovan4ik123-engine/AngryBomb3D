@@ -60,7 +60,7 @@ namespace AngryBomb3D
             bulletSet.update();
 
         handleCollisions();
-        handleWinLose();
+        //handleWinLose();
 
         const auto emptyBulletSetIter = std::find_if(EnumsAndVars::allBulletsSets.begin(), EnumsAndVars::allBulletsSets.end(),
                                                      [](const AngryBomb3D::BulletSet& set){ return set.getAvailableCount() == 0; });
@@ -73,15 +73,10 @@ namespace AngryBomb3D
 
         handleCamera();
 
-        if(m_cameraState != EnumsAndVars::CameraState::FOLLOW_PLAYER || m_player->getIsMoving())
+        if(m_player->getIsMoving())
             EnumsAndVars::showGUIControls = false;
         else
             EnumsAndVars::showGUIControls = true;
-
-        if(m_cameraState == EnumsAndVars::CameraState::FROZEN_IN_AIR)
-            m_gui->cameraBackToPlayerButton->enable();
-        else
-            m_gui->cameraBackToPlayerButton->disable();
     }
 
     void BaseMap::draw()
@@ -97,31 +92,21 @@ namespace AngryBomb3D
         Beryll::Renderer::enableFaceCulling();
 
         glm::mat4 modelMatrix{1.0f};
+        const glm::vec3& camPos = Beryll::Camera::getCameraPos();
 
         m_simpleObjSunLightShadows->bind();
         m_simpleObjSunLightShadows->set3Float("sunLightDir", m_sunLightDir);
-        m_simpleObjSunLightShadows->set3Float("cameraPos", Beryll::Camera::getCameraPos());
+        m_simpleObjSunLightShadows->set3Float("cameraPos", camPos);
         m_simpleObjSunLightShadows->set1Float("ambientLight", m_ambientLight);
         m_simpleObjSunLightShadows->set1Float("sunLightStrength", 0.75f);
         m_simpleObjSunLightShadows->set1Float("specularLightStrength", 0.2f);
+        m_simpleObjSunLightShadows->set1Float("alphaTransparency", 1.0f);
 
         modelMatrix = m_player->getObj()->getModelMatrix();
         m_simpleObjSunLightShadows->setMatrix4x4Float("MVPLightMatrix", m_sunLightVPMatrix * modelMatrix);
         m_simpleObjSunLightShadows->setMatrix4x4Float("modelMatrix", modelMatrix);
         m_simpleObjSunLightShadows->setMatrix3x3Float("normalMatrix", glm::mat3(modelMatrix));
         Beryll::Renderer::drawObject(m_player->getObj(), modelMatrix, m_simpleObjSunLightShadows);
-
-        for(const auto& staticObj : m_allEnv)
-        {
-            if(staticObj->getIsEnabledDraw())
-            {
-                modelMatrix = staticObj->getModelMatrix();
-                m_simpleObjSunLightShadows->setMatrix4x4Float("MVPLightMatrix", m_sunLightVPMatrix * modelMatrix);
-                m_simpleObjSunLightShadows->setMatrix4x4Float("modelMatrix", modelMatrix);
-                m_simpleObjSunLightShadows->setMatrix3x3Float("normalMatrix", glm::mat3(modelMatrix));
-                Beryll::Renderer::drawObject(staticObj, modelMatrix, m_simpleObjSunLightShadows);
-            }
-        }
 
         for(const auto& enemy : m_allEnemies)
         {
@@ -153,12 +138,48 @@ namespace AngryBomb3D
         m_bulletTrajectory.calculateAndDraw(EnumsAndVars::bulletMass,
                                             EnumsAndVars::bulletGravity,
                                             m_bulletStartPosition,
-                                            m_bulletAngleRadians,
+                                            EnumsAndVars::throwAngleRadians,
                                             m_bulletImpulseVector,
                                             glm::vec3(1.0f),
                                             m_sunLightDir);
 
         m_skyBox->draw();
+
+        m_simpleObjSemiTransparent->bind();
+        m_simpleObjSemiTransparent->set3Float("sunLightDir", m_sunLightDir);
+        m_simpleObjSemiTransparent->set3Float("cameraPos", camPos);
+        m_simpleObjSemiTransparent->set1Float("ambientLight", m_ambientLight);
+        m_simpleObjSemiTransparent->set1Float("sunLightStrength", 0.75f);
+        m_simpleObjSemiTransparent->set1Float("specularLightStrength", 0.2f);
+        if(m_bulletTrajectory.getIsHit())
+        {
+            const glm::vec3 hitDir = glm::normalize(m_bulletTrajectory.getHitPoint() - camPos);
+            float hitDistance = glm::distance(m_bulletTrajectory.getHitPoint(), camPos);
+            hitDistance = glm::max(10.0f, hitDistance - 10.0f);
+            m_simpleObjSemiTransparent->set1Int("trajectoryHasHit", 1);
+            m_simpleObjSemiTransparent->set3Float("trajectoryHitPoint", camPos + (hitDir * hitDistance));
+        }
+        else
+        {
+            m_simpleObjSemiTransparent->set1Int("trajectoryHasHit", 0);
+        }
+
+        std::sort(m_allEnv.begin(), m_allEnv.end(), [&](std::shared_ptr<Beryll::BaseSimpleObject>& o1, std::shared_ptr<Beryll::BaseSimpleObject>& o2)
+        {
+            return (glm::distance(camPos, o1->getOrigin()) > glm::distance(camPos, o2->getOrigin()));
+        });
+
+        for(const auto& staticObj : m_allEnv)
+        {
+            if(staticObj->getIsEnabledDraw())
+            {
+                modelMatrix = staticObj->getModelMatrix();
+                m_simpleObjSemiTransparent->setMatrix4x4Float("MVPLightMatrix", m_sunLightVPMatrix * modelMatrix);
+                m_simpleObjSemiTransparent->setMatrix4x4Float("modelMatrix", modelMatrix);
+                m_simpleObjSemiTransparent->setMatrix3x3Float("normalMatrix", glm::mat3(modelMatrix));
+                Beryll::Renderer::drawObject(staticObj, modelMatrix, m_simpleObjSemiTransparent);
+            }
+        }
     }
 
     void BaseMap::loadShaders()
@@ -168,6 +189,12 @@ namespace AngryBomb3D
         m_simpleObjSunLightShadows->bind();
         m_simpleObjSunLightShadows->activateDiffuseTextureMat1();
         m_simpleObjSunLightShadows->activateShadowMapTexture();
+
+        m_simpleObjSemiTransparent = Beryll::Renderer::createShader("shaders/GLES/gameSpecific/SimpleObjectSemiTransparent.vert",
+                                                                    "shaders/GLES/gameSpecific/SimpleObjectSemiTransparent.frag");
+        m_simpleObjSemiTransparent->bind();
+        m_simpleObjSemiTransparent->activateDiffuseTextureMat1();
+        m_simpleObjSemiTransparent->activateShadowMapTexture();
 
         m_simpleObjSunLightShadowsNormals = Beryll::Renderer::createShader("shaders/GLES/SimpleObjectSunLightShadowsNormals.vert",
                                                                            "shaders/GLES/SimpleObjectSunLightShadowsNormals.frag");
@@ -181,11 +208,6 @@ namespace AngryBomb3D
         m_animatedObjSunLightShadows->bind();
         m_animatedObjSunLightShadows->activateDiffuseTextureMat1();
         m_animatedObjSunLightShadows->activateShadowMapTexture();
-
-        m_animatedObjSunLight = Beryll::Renderer::createShader("shaders/GLES/AnimatedObjectSunLight.vert",
-                                                               "shaders/GLES/AnimatedObjectSunLight.frag");
-        m_animatedObjSunLight->bind();
-        m_animatedObjSunLight->activateDiffuseTextureMat1();
 
         m_shadowMap = Beryll::Renderer::createShadowMap(4000, 4000);
     }
@@ -253,38 +275,16 @@ namespace AngryBomb3D
 
     void BaseMap::handleControls()
     {
-        if(m_gui->moveLeftButton->getIsPressed())
+        if(m_gui->buttonMoveLeft->getIsPressed())
             m_player->moveLeft();
 
-        if(m_gui->moveRightButton->getIsPressed())
+        if(m_gui->buttonMoveRight->getIsPressed())
             m_player->moveRight();
 
-        m_shotHappened = false;
-
-        if(m_gui->cameraBackToPlayerButton->getIsPressed())
-            m_cameraState = EnumsAndVars::CameraState::FOLLOW_PLAYER;
-
-        if(m_gui->shotButton->getIsPressed() && m_gui->shotButton->getIsPressedFingerStillOnButton())
+        if(m_gui->buttonShot->getIsPressed())
         {
-            EnumsAndVars::throwPowerCharging = true;
-
-            EnumsAndVars::throwPowerCharged += EnumsAndVars::throwPowerChargeSpeed * Beryll::TimeStep::getTimeStepSec();
-
-            if(EnumsAndVars::throwPowerCharged > EnumsAndVars::throwPowerMaxCharged)
-                EnumsAndVars::throwPowerCharged = EnumsAndVars::throwPowerMaxCharged;
-        }
-        else if(m_gui->shotButton->getIsPressedFingerStillOnScreen())
-        {
-            EnumsAndVars::throwPowerCharging = false;
-            EnumsAndVars::throwPowerCharged = 0;
-        }
-        else if(EnumsAndVars::throwPowerCharging)
-        {
-            EnumsAndVars::throwPowerCharging = false;
-            EnumsAndVars::throwPowerCharged = 0;
-            // Shoot.
+            //m_gui->sliderPower->setValue(0.0f);
             EnumsAndVars::allBulletsSets[EnumsAndVars::currentBulletSetIndex].shoot(m_bulletStartPosition, m_bulletImpulseVector);
-            m_shotHappened = true;
         }
     }
 
@@ -344,36 +344,6 @@ namespace AngryBomb3D
 
     void BaseMap::handleCamera()
     {
-        if(m_shotHappened && EnumsAndVars::cameraShouldFollowBullet &&
-           EnumsAndVars::allBulletsSets[EnumsAndVars::currentBulletSetIndex].getCurrentBullet()->getIsEnabledUpdate())
-            m_cameraState = EnumsAndVars::CameraState::FOLLOW_BULLET;
-
-        if(m_cameraState == EnumsAndVars::CameraState::FROZEN_IN_AIR)
-        {
-            if(m_cameraFrozenInAirTime + 15.0f < EnumsAndVars::mapPlayTimeSec)
-                m_cameraState = EnumsAndVars::CameraState::FOLLOW_PLAYER;
-        }
-        else if(m_cameraState == EnumsAndVars::CameraState::FOLLOW_BULLET)
-        {
-            if(glm::length(EnumsAndVars::allBulletsSets[EnumsAndVars::currentBulletSetIndex].getCurrentBullet()->getOrigin()) > m_player->getFarthestPointDistance() * 1.1f)
-            {
-                m_cameraState = EnumsAndVars::CameraState::FROZEN_IN_AIR;
-                m_cameraFrozenInAirTime = EnumsAndVars::mapPlayTimeSec;
-            }
-
-            const glm::vec3 from = EnumsAndVars::allBulletsSets[EnumsAndVars::currentBulletSetIndex].getCurrentBullet()->getOrigin();
-            const glm::vec3 to = glm::normalize(EnumsAndVars::allBulletsSets[EnumsAndVars::currentBulletSetIndex].getCurrentBullet()->getLinearVelocity()) * 120.0f;
-            Beryll::RayClosestHit hit = Beryll::Physics::castRayClosestHit(from, to,
-                                                                           Beryll::CollisionGroups::PLAYER_BULLET,
-                                                                           Beryll::CollisionGroups::STATIC_ENVIRONMENT | Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT);
-
-            if(hit && glm::distance(EnumsAndVars::allBulletsSets[EnumsAndVars::currentBulletSetIndex].getCurrentBullet()->getOrigin(), hit.hitPoint) < 20.0f)
-            {
-                m_cameraState = EnumsAndVars::CameraState::FROZEN_IN_AIR;
-                m_cameraFrozenInAirTime = EnumsAndVars::mapPlayTimeSec;
-            }
-        }
-
         m_gui->showTutorialCameraTip = true;
         const std::vector<Beryll::Finger>& fingers = Beryll::EventHandler::getFingers();
         for(const Beryll::Finger& f : fingers)
@@ -398,7 +368,7 @@ namespace AngryBomb3D
                 m_lastFingerMovePosY = f.normalizedPos.y;
 
                 m_eyesLookAngleXZ += deltaX;
-                m_eyesLookAngleY += deltaY;
+                m_eyesLookAngleY -= deltaY;
                 //if(m_eyesLookAngleY > 30.0f) m_eyesLookAngleY = 30.0f; // Eye down.
                 //if(m_eyesLookAngleY < -15.0f) m_eyesLookAngleY = -15.0f; // Eye up.
                 //BR_INFO("m_eyesLookAngleXZ %f", m_eyesLookAngleXZ);
@@ -406,8 +376,8 @@ namespace AngryBomb3D
             }
         }
 
-        if(m_eyesLookAngleY > 85.0f) m_eyesLookAngleY = 85.0f; // Eye down.
-        if(m_eyesLookAngleY < -85.0f) m_eyesLookAngleY = -85.0f; // Eye up.
+        if(m_eyesLookAngleY > 40.0f) m_eyesLookAngleY = 40.0f; // Eye down.
+        if(m_eyesLookAngleY < -16.0f) m_eyesLookAngleY = -16.0f; // Eye up.
 
         m_playerCurrentDir = m_player->getObj()->getOrigin();
         m_playerCurrentDir.y = 0.0f;
@@ -471,25 +441,14 @@ namespace AngryBomb3D
             m_playerPrevDir = m_playerCurrentDir;
         }
 
-        if(m_cameraState == EnumsAndVars::CameraState::FOLLOW_PLAYER)
-        {
-            //BR_INFO("angle1 %f", m_playerRotatedTotalAngle);
-            if(m_eyesLookAngleXZ > m_playerRotatedTotalAngle + m_cameraXZAngleThreshold)
-                m_eyesLookAngleXZ = m_playerRotatedTotalAngle + m_cameraXZAngleThreshold;
-            else if(m_eyesLookAngleXZ < m_playerRotatedTotalAngle - m_cameraXZAngleThreshold)
-                m_eyesLookAngleXZ = m_playerRotatedTotalAngle - m_cameraXZAngleThreshold;
+        //BR_INFO("angle1 %f", m_playerRotatedTotalAngle);
+        if(m_eyesLookAngleXZ > m_playerRotatedTotalAngle + m_cameraXZAngleThreshold)
+            m_eyesLookAngleXZ = m_playerRotatedTotalAngle + m_cameraXZAngleThreshold;
+        else if(m_eyesLookAngleXZ < m_playerRotatedTotalAngle - m_cameraXZAngleThreshold)
+            m_eyesLookAngleXZ = m_playerRotatedTotalAngle - m_cameraXZAngleThreshold;
 
-            if(m_eyesLookAngleY > 40.0f) m_eyesLookAngleY = 40.0f; // Eye down.
-            if(m_eyesLookAngleY < -15.0f) m_eyesLookAngleY = -15.0f; // Eye up.
-
-            m_cameraFront = m_player->getObj()->getOrigin();
-            m_cameraFront.y += 10.0f;
-        }
-        else if(m_cameraState == EnumsAndVars::CameraState::FOLLOW_BULLET)
-        {
-            m_cameraFront = EnumsAndVars::allBulletsSets[EnumsAndVars::currentBulletSetIndex].getCurrentBullet()->getOrigin();
-            m_cameraFront.y += 5.0f;
-        }
+        m_cameraFront = m_player->getObj()->getOrigin();
+        m_cameraFront.y += 10.0f;
 
         // Euler angles.
         float m_eyesLookAngleXZRadians = glm::radians(m_eyesLookAngleXZ);
@@ -499,31 +458,32 @@ namespace AngryBomb3D
         m_cameraOffset.z = glm::sin(m_eyesLookAngleXZRadians) * glm::cos(m_eyesLookAngleYRadians);
         m_cameraOffset = glm::normalize(m_cameraOffset);
 
-        Beryll::Camera::setCameraPos(m_cameraFront + m_cameraOffset * m_cameraDistance);
+        Beryll::Camera::setCameraPos(m_cameraFront + m_cameraOffset * EnumsAndVars::SettingsMenu::cameraDistance);
         Beryll::Camera::setCameraFrontPos(m_cameraFront);
         Beryll::Camera::updateCameraVectors();
 
-        if(m_cameraState == EnumsAndVars::CameraState::FOLLOW_PLAYER)
-        {
-            m_player->getObj()->rotateToDirection(Beryll::Camera::getCameraFrontDirectionXZ(), true);
-        }
+        m_player->getObj()->rotateToDirection(Beryll::Camera::getCameraFrontDirectionXZ(), true);
 
         // Move camera a bit to left side(player's character will not directly on the middle of the screen).
         // That allow player see all trajectory including part going down.
-        Beryll::Camera::setCameraPos(Beryll::Camera::getCameraPos() + Beryll::Camera::getCameraLeftXYZ() * 7.0f);
-        Beryll::Camera::setCameraFrontPos(Beryll::Camera::getCameraFrontPos() + Beryll::Camera::getCameraLeftXYZ() * 5.0f);
+        Beryll::Camera::setCameraPos(Beryll::Camera::getCameraPos() + Beryll::Camera::getCameraLeftXYZ() * 20.0f);
+        Beryll::Camera::setCameraFrontPos(Beryll::Camera::getCameraFrontPos() + Beryll::Camera::getCameraLeftXYZ() * 12.0f);
+        // Move camera pos up to get view more from top if player is on high point.
+        //Beryll::Camera::setCameraPos(Beryll::Camera::getCameraPos() + glm::vec3(0.0f, m_player->getObj()->getOrigin().y * 0.7f, 0.0f));
 
         // Update shoot dir after camera.
+        EnumsAndVars::addToThrowAngleRadians = glm::radians(60.0f) - glm::radians(m_gui->sliderPower->getValue() / 3.9f);
         float angleBetweenWorldUpAndCameraBack = BeryllUtils::Common::getAngleInRadians(BeryllConstants::worldUp, Beryll::Camera::getCameraBackDirectionXYZ());
-        m_bulletAngleRadians = angleBetweenWorldUpAndCameraBack - glm::half_pi<float>() + 0.2618f; // + 15 degrees.
+        EnumsAndVars::throwAngleRadians = angleBetweenWorldUpAndCameraBack - glm::half_pi<float>();
+        EnumsAndVars::throwAngleRadians += EnumsAndVars::addToThrowAngleRadians;
 
         m_bulletImpulseVector = m_player->getObj()->getFaceDirXZ();
-        m_bulletImpulseVector.y = glm::tan(m_bulletAngleRadians);
+        m_bulletImpulseVector.y = glm::tan(EnumsAndVars::throwAngleRadians);
         m_bulletImpulseVector = glm::normalize(m_bulletImpulseVector);
         m_bulletImpulseVector *= EnumsAndVars::bulletMass;
-        m_bulletImpulseVector *= EnumsAndVars::throwPowerMin + EnumsAndVars::throwPowerCharged;
+        m_bulletImpulseVector *= EnumsAndVars::throwPowerDefault + m_gui->sliderPower->getValue();
 
-        m_bulletStartPosition = m_player->getObj()->getOrigin() + m_player->getObj()->getFaceDirXZ() * 3.0f;
-        m_bulletStartPosition.y += 4.0f;
+        m_bulletStartPosition = m_player->getObj()->getOrigin() + m_player->getObj()->getFaceDirXZ() * 2.0f;
+        m_bulletStartPosition.y += 3.0f;
     }
 }

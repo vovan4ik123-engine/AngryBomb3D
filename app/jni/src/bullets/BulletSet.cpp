@@ -7,8 +7,11 @@ namespace AngryBomb3D
                          std::vector<std::shared_ptr<Beryll::SimpleCollidingObject>> bullets,
                          float disableTimeAfterCollision)
     {
+        BR_ASSERT((bullets.size() > 0), "%s", "bullets can not be empty.");
+
         m_bulletType = type;
         m_bullets = std::move(bullets);
+        m_bulletsCollisionInfo.resize(m_bullets.size());
         m_disableTimeAfterCollision = disableTimeAfterCollision;
 
         for(const auto& bullet : m_bullets)
@@ -27,47 +30,48 @@ namespace AngryBomb3D
 
     bool BulletSet::shoot(const glm::vec3& startPos, const glm::vec3& impulse)
     {
-        BR_ASSERT((m_currentBulletIndex < m_bullets.size()), "%s m_bullets.size() %d", "m_currentBulletIndex must be < m_bullets.size()", m_bullets.size());
+        BR_ASSERT((m_currentBulletIndexToShoot < m_bullets.size()), "%s m_bullets.size() %d", "m_currentBulletIndexToShoot must be < m_bullets.size()", m_bullets.size());
 
-        if(m_currentBulletIndex >= m_bullets.size())
+        if(m_currentBulletIndexToShoot >= m_bullets.size())
             return false;
 
         BR_INFO("%s", "Shoot.");
-        m_bullets[m_currentBulletIndex]->enableDraw();
-        m_bullets[m_currentBulletIndex]->enableUpdate();
-        m_bullets[m_currentBulletIndex]->enableCollisionMesh();
-        m_bullets[m_currentBulletIndex]->setGravity(EnumsAndVars::bulletGravity, false, false);
-        m_bullets[m_currentBulletIndex]->setOrigin(startPos, true);
-        m_bullets[m_currentBulletIndex]->applyCentralImpulse(impulse);
+        m_bullets[m_currentBulletIndexToShoot]->enableDraw();
+        m_bullets[m_currentBulletIndexToShoot]->enableUpdate();
+        m_bullets[m_currentBulletIndexToShoot]->enableCollisionMesh();
+        m_bullets[m_currentBulletIndexToShoot]->setGravity(EnumsAndVars::bulletGravity, false, false);
+        m_bullets[m_currentBulletIndexToShoot]->setOrigin(startPos, true);
+        m_bullets[m_currentBulletIndexToShoot]->applyCentralImpulse(impulse);
 
-        m_isAnyBulletActive = true;
+        ++m_currentBulletIndexToShoot;
 
         return true;
     }
 
     void BulletSet::update()
     {
-        BR_ASSERT((m_currentBulletIndex < m_bullets.size()), "%s", "m_currentBulletIndex must be < m_bullets.size()");
+        BR_ASSERT((m_currentBulletIndexToShoot < m_bullets.size()), "%s", "m_currentBulletIndexToShoot must be < m_bullets.size()");
 
         m_anyBulletHasCollision = false;
 
-        if(m_currentBulletIndex >= m_bullets.size())
-            return;
-
-        if(!m_firstCollisionHappened && Beryll::Physics::getAnyCollisionForID(m_bullets[m_currentBulletIndex]->getID()) != 0)
+        for(int i = 0; i < m_bullets.size(); ++i)
         {
-            m_firstCollisionHappened = true;
-            m_anyBulletHasCollision = true;
-            m_collisionTime = EnumsAndVars::mapPlayTimeSec;
-        }
+            if(!m_bullets[i]->getIsEnabledUpdate())
+                continue;
 
-        if(m_firstCollisionHappened && m_collisionTime + m_disableTimeAfterCollision < EnumsAndVars::mapPlayTimeSec)
-        {
-            m_bullets[m_currentBulletIndex]->disableForEver();
+            if(!m_bulletsCollisionInfo[i].firstCollisionHappened &&
+               Beryll::Physics::getAnyCollisionForID(m_bullets[i]->getID()) != 0)
+            {
+                m_bulletsCollisionInfo[i].firstCollisionHappened = true;
+                m_bulletsCollisionInfo[i].collisionTime = EnumsAndVars::mapPlayTimeSec;
+                m_anyBulletHasCollision = true;
+            }
 
-            ++m_currentBulletIndex;
-            m_isAnyBulletActive = false;
-            m_firstCollisionHappened = false;
+            if(m_bulletsCollisionInfo[i].firstCollisionHappened &&
+               m_bulletsCollisionInfo[i].collisionTime + m_disableTimeAfterCollision < EnumsAndVars::mapPlayTimeSec)
+            {
+                m_bullets[i]->disableForEver();
+            }
         }
     }
 }

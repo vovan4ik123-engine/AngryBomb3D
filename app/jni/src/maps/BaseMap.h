@@ -46,9 +46,9 @@ namespace AngryBomb3D
 
         // Shaders and light.
         std::shared_ptr<Beryll::Shader> m_simpleObjSunLightShadows;
+        std::shared_ptr<Beryll::Shader> m_simpleObjSemiTransparent;
         std::shared_ptr<Beryll::Shader> m_simpleObjSunLightShadowsNormals;
         std::shared_ptr<Beryll::Shader> m_animatedObjSunLightShadows;
-        std::shared_ptr<Beryll::Shader> m_animatedObjSunLight;
         std::unique_ptr<Beryll::ShadowMap> m_shadowMap;
         glm::mat4 m_sunLightVPMatrix{1.0f};
         // Assign in subclass constructor.
@@ -62,13 +62,10 @@ namespace AngryBomb3D
         float m_lastFingerMovePosX = 0.0f;
         float m_lastFingerMovePosY = 0.0f;
         float m_eyesLookAngleXZ = 0.0f; // Degrees.
-        float m_eyesLookAngleY = 15.0f; // Degrees.
+        float m_eyesLookAngleY = -10.0f; // Degrees.
         glm::vec3 m_cameraOffset{0.0f};
         glm::vec3 m_cameraFront{0.0f};
-        float m_cameraDistance = 50.0f;
         const float m_cameraXZAngleThreshold = 45.0f;
-        float m_cameraFrozenInAirTime = 0.0f;
-        EnumsAndVars::CameraState m_cameraState = EnumsAndVars::CameraState::FOLLOW_PLAYER;
 
         const glm::vec3 m_worldDefaultDir{1.0f, 0.0f, 0.0f};
         glm::vec3 m_playerCurrentDir{0.0f};
@@ -77,9 +74,7 @@ namespace AngryBomb3D
 
         // Player bullet + trajectory.
         PlayerBulletAirTrajectory m_bulletTrajectory;
-        float m_bulletAngleRadians = 0.0f;
         glm::vec3 m_bulletImpulseVector{0.0f};
         glm::vec3 m_bulletStartPosition{0.0f};
-        bool m_shotHappened = false;
     };
 }

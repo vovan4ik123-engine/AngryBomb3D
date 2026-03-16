@@ -14,12 +14,11 @@ namespace AngryBomb3D
         void updateAfterPhysics() override;
         void draw() override;
 
-        std::shared_ptr<Beryll::ButtonWithTexture> shotButton;
-        std::shared_ptr<Beryll::ButtonWithTexture> moveLeftButton;
-        std::shared_ptr<Beryll::ButtonWithTexture> moveRightButton;
-        std::shared_ptr<Beryll::ButtonWithTexture> cameraBackToPlayerButton;
-        std::shared_ptr<Beryll::ButtonWithTexture> cameraFollowPlayerButton;
-        std::shared_ptr<Beryll::ButtonWithTexture> cameraFollowBulletButton;
+
+        std::shared_ptr<Beryll::ButtonWithTexture> buttonShot;
+        std::shared_ptr<Beryll::ButtonWithTexture> buttonMoveLeft;
+        std::shared_ptr<Beryll::ButtonWithTexture> buttonMoveRight;
+        std::shared_ptr<Beryll::SliderVertical> sliderPower;
 
         bool showTutorialCameraTip = false;
 

@@ -11,6 +11,8 @@ namespace AngryBomb3D
         ~PlayerBulletAirTrajectory();
 
         glm::mat4 getModelMatrix() { return m_trajectoryPoint->getModelMatrix(); }
+        bool getIsHit() { return m_trajectoryHasHit; }
+        glm::vec3 getHitPoint() { return m_trajectoryHitPoint->getOrigin(); }
 
         void calculateAndDraw(const float bulletMass,
                               const glm::vec3& bulletGravity,
@@ -25,6 +27,7 @@ namespace AngryBomb3D
         // Set new origin for next position and draw it again.
         std::shared_ptr<Beryll::SimpleObject> m_trajectoryPoint;
         std::shared_ptr<Beryll::SimpleObject> m_trajectoryHitPoint;
+        bool m_trajectoryHasHit = false;
 
         glm::mat4 m_modelMatrix{1.0f};
         std::shared_ptr<Beryll::Shader> m_shader;

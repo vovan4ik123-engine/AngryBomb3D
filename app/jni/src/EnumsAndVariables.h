@@ -17,14 +17,6 @@ namespace EnumsAndVars
         static constexpr inline int attack = 2; // 3_Attack
     };
 
-    enum class CameraState
-    {
-        FOLLOW_PLAYER = 0,
-        FOLLOW_BULLET = 1,
-        FROZEN_IN_AIR = 2
-    };
-    inline bool cameraShouldFollowBullet = false;
-
     inline bool showGUIControls = true;
 
     // Database tables.
@@ -33,15 +25,16 @@ namespace EnumsAndVars
         // Stored in DB.
         static inline int FPSLimit = 60;
         // Not stored in DB.
-        static constexpr inline float cameraHorizontalSpeed = 350.0f * 0.8f;
-        static constexpr inline float cameraVerticalSpeed = 125.0f * 0.8f;
+        static constexpr inline float cameraDistance = 47.0f;
+        static constexpr inline float cameraHorizontalSpeed = 350.0f * 0.5f;
+        static constexpr inline float cameraVerticalSpeed = 125.0f * 0.5f;
     };
 
     struct MapsProgress
     {
         // Stored in DB.
         static inline int currentMapIndex = 0; // Index of selected map on start screen.
-        static inline int lastOpenedMapIndex = 10; // Last index of map available for select and play.
+        static inline int lastOpenedMapIndex = 0; // Last index of map available for select and play.
         // Not stored in DB.
         static constexpr inline int maxMapIndex = 10; // Last possible map index (opened or not). Must be hardcoded before release.
         static inline int mapIndexWhenMapStart = 0;
@@ -50,12 +43,9 @@ namespace EnumsAndVars
     constexpr inline float bulletMass = 1.0f;
     constexpr inline glm::vec3 bulletGravity{0.0f, -60.0f, 0.0f};
 
-    // Throw power.
-    constexpr inline float throwPowerMin = 50.0f;
-    inline float throwPowerCharged = 0.0f;
-    constexpr inline float throwPowerMaxCharged = 110.0f;
-    constexpr inline float throwPowerChargeSpeed = 60.0f; // In one sec.
-    inline bool throwPowerCharging = false;
+    constexpr inline float throwPowerDefault = 50.0f;
+    inline float throwAngleRadians = 0.0f;
+    inline float addToThrowAngleRadians = glm::radians(70.0f);
 
     inline bool showPlayerMoveArrows = false;
 
@@ -73,13 +63,7 @@ namespace EnumsAndVars
     inline void reset()
     {
         BR_INFO("%s", "EnumsAndVars::reset()");
-        cameraShouldFollowBullet = false;
-
         showGUIControls = true;
-
-        // Throw power.
-        throwPowerCharged = 0.0f;
-        throwPowerCharging = false;
 
         showPlayerMoveArrows = false;
 
