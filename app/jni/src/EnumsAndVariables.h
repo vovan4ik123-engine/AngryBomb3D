@@ -45,7 +45,6 @@ namespace EnumsAndVars
 
     constexpr inline float throwPowerDefault = 50.0f;
     inline float throwAngleRadians = 0.0f;
-    inline float addToThrowAngleRadians = glm::radians(70.0f);
 
     inline bool showPlayerMoveArrows = false;
 

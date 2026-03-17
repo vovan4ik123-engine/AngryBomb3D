@@ -29,13 +29,13 @@ namespace AngryBomb3D
         if(bulletMass > 0.0f)
             inverseMass = 1.0f / bulletMass;
 
-        glm::vec3 linearVelocity = impulseVector * linearFactor * inverseMass;
+        glm::vec3 linearVelocity = (impulseVector * bulletMass) * linearFactor * inverseMass;
         float speed = glm::length(linearVelocity);
 
         glm::vec3 throwDirXZPlane{0.0f};
         glm::vec3 startPositionXZPlane = startPosition;
         startPositionXZPlane.y = 0.0f;
-        glm::vec3 normalizedImpulseVector = glm::normalize(impulseVector);
+        const glm::vec3 normalizedImpulseVector = glm::normalize(impulseVector);
 
         float XZDistance = 0.0f;
         const float startHeight = startPosition.y;
@@ -46,17 +46,19 @@ namespace AngryBomb3D
         bool castRayBetweenPoints = false;
 
         m_trajectoryHasHit = false;
+        const float throwPower = glm::length(impulseVector) / 22.0f;
 
+        //BR_INFO("throwPower %f", throwPower);
         // Calculate some points on fly trajectory.
-        for(int i = 0; i <= 80; ++i)
+        for(int i = 0; i <= (60 - int(throwPower * 2.0f)); ++i)
         {
             // Point every float(i * i)... meters on trajectory !!! Not on ground !!!
             if(i == 0)
-                throwDirXZPlane = normalizedImpulseVector * 2.8f;
+                throwDirXZPlane = normalizedImpulseVector * (throwPower * 0.4f);
             else if(i == 1)
-                throwDirXZPlane = normalizedImpulseVector * 8.0f;
+                throwDirXZPlane = normalizedImpulseVector * (throwPower * 1.142857f);
             else
-                throwDirXZPlane = normalizedImpulseVector * float(i * 7);
+                throwDirXZPlane = normalizedImpulseVector * (i * throwPower);
 
             throwDirXZPlane.y = 0.0f; // Do point projection on ground.
             XZDistance = glm::length(throwDirXZPlane);

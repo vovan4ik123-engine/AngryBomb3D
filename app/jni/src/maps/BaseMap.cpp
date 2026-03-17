@@ -472,15 +472,15 @@ namespace AngryBomb3D
         //Beryll::Camera::setCameraPos(Beryll::Camera::getCameraPos() + glm::vec3(0.0f, m_player->getObj()->getOrigin().y * 0.7f, 0.0f));
 
         // Update shoot dir after camera.
-        EnumsAndVars::addToThrowAngleRadians = glm::radians(60.0f) - glm::radians(m_gui->sliderPower->getValue() / 3.9f);
-        float angleBetweenWorldUpAndCameraBack = BeryllUtils::Common::getAngleInRadians(BeryllConstants::worldUp, Beryll::Camera::getCameraBackDirectionXYZ());
+        const float factorToReduceAngle = std::pow(m_gui->sliderPower->getValue() / m_gui->sliderPower->getMax(), 1.0f/2.4f); // sqrt_2.4 (x)
+        const float addToThrowAngleRadians = glm::radians(60.0f - (factorToReduceAngle * 46.0f));
+        const float angleBetweenWorldUpAndCameraBack = BeryllUtils::Common::getAngleInRadians(BeryllConstants::worldUp, Beryll::Camera::getCameraBackDirectionXYZ());
         EnumsAndVars::throwAngleRadians = angleBetweenWorldUpAndCameraBack - glm::half_pi<float>();
-        EnumsAndVars::throwAngleRadians += EnumsAndVars::addToThrowAngleRadians;
+        EnumsAndVars::throwAngleRadians += addToThrowAngleRadians;
 
         m_bulletImpulseVector = m_player->getObj()->getFaceDirXZ();
         m_bulletImpulseVector.y = glm::tan(EnumsAndVars::throwAngleRadians);
         m_bulletImpulseVector = glm::normalize(m_bulletImpulseVector);
-        m_bulletImpulseVector *= EnumsAndVars::bulletMass;
         m_bulletImpulseVector *= EnumsAndVars::throwPowerDefault + m_gui->sliderPower->getValue();
 
         m_bulletStartPosition = m_player->getObj()->getOrigin() + m_player->getObj()->getFaceDirXZ() * 2.0f;
