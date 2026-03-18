@@ -63,7 +63,7 @@ namespace AngryBomb3D
         //handleWinLose();
 
         const auto emptyBulletSetIter = std::find_if(EnumsAndVars::allBulletsSets.begin(), EnumsAndVars::allBulletsSets.end(),
-                                                     [](const AngryBomb3D::BulletSet& set){ return set.getAvailableCount() == 0; });
+                                                     [](const AngryBomb3D::BulletSet& set){ return set.getAvailableCount() == 0 && !set.getIsAnyBulletActive(); });
         if (emptyBulletSetIter != EnumsAndVars::allBulletsSets.end())
         {
             BR_INFO("%s", "EnumsAndVars::allBulletsSets.erase()");
@@ -441,7 +441,7 @@ namespace AngryBomb3D
             m_playerPrevDir = m_playerCurrentDir;
         }
 
-        //BR_INFO("angle1 %f", m_playerRotatedTotalAngle);
+        //BR_INFO("m_eyesLookAngleXZ %f", m_eyesLookAngleXZ);
         if(m_eyesLookAngleXZ > m_playerRotatedTotalAngle + m_cameraXZAngleThreshold)
             m_eyesLookAngleXZ = m_playerRotatedTotalAngle + m_cameraXZAngleThreshold;
         else if(m_eyesLookAngleXZ < m_playerRotatedTotalAngle - m_cameraXZAngleThreshold)

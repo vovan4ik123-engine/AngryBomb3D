@@ -23,7 +23,7 @@ namespace AngryBomb3D
         }
 
         sliderPower = std::make_shared<Beryll::SliderVertical>("GUI/SliderVerticalTrack.png", "GUI/SliderVerticalThumb.png",
-                                                               glm::vec3{8.0f, 10.0f, 0.5f}, glm::vec2{2.5f, 50.0f}, 0.0f, 300.0f);
+                                                               glm::vec3{8.0f, 10.0f, 0.5f}, glm::vec2{3.0f, 50.0f}, 0.0f, 300.0f);
         m_guiObjects.push_back(sliderPower);
 
         buttonShot = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/ShotButton.png", "",

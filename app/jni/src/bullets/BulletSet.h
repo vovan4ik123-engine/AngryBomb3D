@@ -34,6 +34,7 @@ namespace AngryBomb3D
             return m_bullets.size() - m_currentBulletIndexToShoot;
         }
         bool getIsAnyBulletHasCollision() const { return m_anyBulletHasCollision; }
+        bool getIsAnyBulletActive() const { return m_anyBulletIsActive; }
 
     private:
         BulletType m_bulletType = BulletType::NONE;
@@ -42,5 +43,6 @@ namespace AngryBomb3D
         int m_currentBulletIndexToShoot = 0;
         float m_disableTimeAfterCollision = 0.0f;
         bool m_anyBulletHasCollision = false;
+        bool m_anyBulletIsActive = false;
     };
 }

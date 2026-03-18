@@ -44,20 +44,22 @@ namespace AngryBomb3D
         m_bullets[m_currentBulletIndexToShoot]->applyCentralImpulse(impulse);
 
         ++m_currentBulletIndexToShoot;
+        m_anyBulletIsActive = true;
 
         return true;
     }
 
     void BulletSet::update()
     {
-        BR_ASSERT((m_currentBulletIndexToShoot < m_bullets.size()), "%s", "m_currentBulletIndexToShoot must be < m_bullets.size()");
-
         m_anyBulletHasCollision = false;
+        m_anyBulletIsActive = false;
 
         for(int i = 0; i < m_bullets.size(); ++i)
         {
             if(!m_bullets[i]->getIsEnabledUpdate())
                 continue;
+
+            m_anyBulletIsActive = true;
 
             if(!m_bulletsCollisionInfo[i].firstCollisionHappened &&
                Beryll::Physics::getAnyCollisionForID(m_bullets[i]->getID()) != 0)

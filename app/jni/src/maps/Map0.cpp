@@ -8,10 +8,10 @@ namespace AngryBomb3D
         loadEnv();
         loadEnemies();
         loadPlayerPoints();
-        loadBulletSet(BulletType::STANDARD_1_KG, 100, 2.5f);
+        loadBulletSet(BulletType::STANDARD_1_KG, 100, 3.0f);
 
         loadShaders();
-        m_eyesLookAngleXZ = -90.0f;
+        m_eyesLookAngleXZ = -9.0f;
         m_dirToSun = glm::normalize(glm::vec3(-0.5f, 1.0f, -0.6f));
         m_sunLightDir = -m_dirToSun;
         m_skyBox = Beryll::Renderer::createSkyBox("skyboxes/whiteClouds");
@@ -64,6 +64,7 @@ namespace AngryBomb3D
         for(const auto& env : dynamicEnv1)
         {
             env->setFriction(0.5f);
+            env->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
             m_simpleObjForShadowMap.push_back(env);
             m_animatedOrDynamicObjects.push_back(env);
             m_allEnv.push_back(env);

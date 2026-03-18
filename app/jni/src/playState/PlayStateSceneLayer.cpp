@@ -30,9 +30,9 @@ namespace AngryBomb3D
         if(EnumsAndVars::MapsProgress::currentMapIndex == 0)
             m_map = std::make_shared<Map0>(gui);
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 1)
-            m_map = std::make_shared<Map10>(gui);
-        else if(EnumsAndVars::MapsProgress::currentMapIndex == 2)
             m_map = std::make_shared<Map1>(gui);
+        else if(EnumsAndVars::MapsProgress::currentMapIndex == 2)
+            m_map = std::make_shared<Map2>(gui);
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 3)
             m_map = std::make_shared<Map2>(gui);
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 4)
