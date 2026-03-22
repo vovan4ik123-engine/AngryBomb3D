@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
     DataBaseHelper::prepareDatabase();
 
     Beryll::GameLoop::setFPSLimit(EnumsAndVars::SettingsMenu::FPSLimit);
-    //Beryll::GameLoop::setFPSLimit(10.0f);
+    //Beryll::GameLoop::setFPSLimit(20.0f);
 
     Beryll::Camera::setCameraFov(45.0f);
     Beryll::Camera::setProjectionNearClipPlane(5.0f);

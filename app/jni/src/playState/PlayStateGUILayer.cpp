@@ -135,5 +135,46 @@ namespace AngryBomb3D
                 (*it)->draw();
             }
         }
+
+        if(!EnumsAndVars::notEmptyBulletsSets.empty())
+        {
+            const float width = EnumsAndVars::notEmptyBulletsSets[0]->buttonBullet->getWidthHeightInPercents().x;
+            const float height = EnumsAndVars::notEmptyBulletsSets[0]->buttonBullet->getWidthHeightInPercents().y;
+            const float space = 1.0f;
+            const float totalWidth = EnumsAndVars::notEmptyBulletsSets.size() * width + ((EnumsAndVars::notEmptyBulletsSets.size() - 1) * space);
+            const float firstElementLeftPos = 50.0f - totalWidth * 0.5f;
+            const float bottomPos = 4.0f;
+            float currentElementLeftPos = firstElementLeftPos;
+            glm::vec3 newPos{0.0f};
+
+            for(int i = 0; i < EnumsAndVars::notEmptyBulletsSets.size(); ++i)
+            {
+                newPos = EnumsAndVars::notEmptyBulletsSets[i]->buttonBullet->getPositionInPercents();
+                newPos.x = currentElementLeftPos;
+                newPos.y = bottomPos;
+                if(EnumsAndVars::currentBulletSetIndex == i)
+                    newPos.y += 2.0f;
+                if(newPos != EnumsAndVars::notEmptyBulletsSets[i]->buttonBullet->getPositionInPercents())
+                {
+                    BR_INFO("%s", "Update button pos.");
+                    EnumsAndVars::notEmptyBulletsSets[i]->buttonBullet->updatePositionInPercents(newPos);
+                }
+                EnumsAndVars::notEmptyBulletsSets[i]->buttonBullet->draw();
+
+                newPos = EnumsAndVars::notEmptyBulletsSets[i]->textBulletsCount->getPositionInPercents();
+                newPos.x = currentElementLeftPos + width * 0.3f;
+                newPos.y = bottomPos + height + 2.0f;
+                if(EnumsAndVars::currentBulletSetIndex == i)
+                    newPos.y += 2.0f;
+                if(newPos != EnumsAndVars::notEmptyBulletsSets[i]->textBulletsCount->getPositionInPercents())
+                {
+                    BR_INFO("%s", "Update text count pos.");
+                    EnumsAndVars::notEmptyBulletsSets[i]->textBulletsCount->updatePositionInPercents(newPos);
+                }
+                EnumsAndVars::notEmptyBulletsSets[i]->textBulletsCount->draw();
+
+                currentElementLeftPos += (width + space);
+            }
+        }
     }
 }

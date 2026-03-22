@@ -21,6 +21,18 @@ namespace AngryBomb3D
             bullet->disableCollisionMesh();
         }
 
+        const float screenAR = Beryll::Window::getInstance()->getScreenAspectRatio();
+        if(type == BulletType::STANDARD_1_KG)
+        {
+            buttonBullet = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/bullets/Standard_1kg.png", "",
+                                                                       glm::vec3{0.0f, 0.0f, 0.5f}, glm::vec2{11.0f / screenAR, 11.0f});
+        }
+        else
+        {
+            BR_ASSERT(false, "%s", "Unknown bullet type.");
+        }
+
+        textBulletsCount = Beryll::Renderer::createGUIText("", glm::vec3{0.06f, 0.06f, 0.06f}, glm::vec3{0.0f, 0.0f, 0.5f}, 5.0f);
     }
 
     BulletSet::~BulletSet()
@@ -53,6 +65,7 @@ namespace AngryBomb3D
     {
         m_anyBulletHasCollision = false;
         m_anyBulletIsActive = false;
+        textBulletsCount->text = std::to_string(m_bullets.size() - m_currentBulletIndexToShoot);
 
         for(int i = 0; i < m_bullets.size(); ++i)
         {

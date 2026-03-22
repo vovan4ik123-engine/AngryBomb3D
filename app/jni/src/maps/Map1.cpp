@@ -8,7 +8,11 @@ namespace AngryBomb3D
         loadEnv();
         loadEnemies();
         loadPlayerPoints();
-        loadBulletSet(BulletType::STANDARD_1_KG, 100, 3.0f);
+        loadBulletSet(BulletType::STANDARD_1_KG, 1, 3.0f);
+        loadBulletSet(BulletType::STANDARD_1_KG, 13, 3.0f);
+        loadBulletSet(BulletType::STANDARD_1_KG, 4, 3.0f);
+        loadBulletSet(BulletType::STANDARD_1_KG, 2, 3.0f);
+        loadBulletSet(BulletType::STANDARD_1_KG, 10, 3.0f);
 
         loadShaders();
         m_eyesLookAngleXZ = -9.0f;
@@ -50,7 +54,7 @@ namespace AngryBomb3D
         for(const auto& env : dynamicEnv1)
         {
             env->setFriction(1.0f);
-            env->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
+            env->setGravity(glm::vec3{0.0f, -40.0f, 0.0f});
             m_simpleObjForShadowMap.push_back(env);
             m_animatedOrDynamicObjects.push_back(env);
             m_allEnv.push_back(env);
@@ -59,21 +63,22 @@ namespace AngryBomb3D
 
     void Map1::loadEnemies()
     {
-//        auto enemies = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map1/Enemies.fbx",
-//                                                                                1.0f,
-//                                                                                true,
-//                                                                                Beryll::CollisionFlags::DYNAMIC,
-//                                                                                Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-//                                                                                Beryll::CollisionGroups::STATIC_ENVIRONMENT | Beryll::CollisionGroups::PLAYER_BULLET |
-//                                                                                Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-//                                                                                Beryll::SceneObjectGroups::DYNAMIC_ENVIRONMENT);
-//        for(const auto& enemy : enemies)
-//        {
-//            enemy->setFriction(0.5f);
-//            m_simpleObjForShadowMap.push_back(enemy);
-//            m_animatedOrDynamicObjects.push_back(enemy);
-//            m_allEnemies.emplace_back(enemy);
-//        }
+        auto enemies = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map1/Enemies.fbx",
+                                                                                1.0f,
+                                                                                true,
+                                                                                Beryll::CollisionFlags::DYNAMIC,
+                                                                                Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
+                                                                                Beryll::CollisionGroups::STATIC_ENVIRONMENT | Beryll::CollisionGroups::PLAYER_BULLET |
+                                                                                Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
+                                                                                Beryll::SceneObjectGroups::DYNAMIC_ENVIRONMENT);
+        for(const auto& enemy : enemies)
+        {
+            enemy->setFriction(0.5f);
+            enemy->setGravity(glm::vec3{0.0f, -40.0f, 0.0f});
+            m_simpleObjForShadowMap.push_back(enemy);
+            m_animatedOrDynamicObjects.push_back(enemy);
+            m_allEnemies.emplace_back(enemy);
+        }
     }
 
     void Map1::loadPlayerPoints()

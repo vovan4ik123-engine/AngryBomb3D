@@ -48,7 +48,8 @@ namespace EnumsAndVars
 
     inline bool showPlayerMoveArrows = false;
 
-    inline std::vector<AngryBomb3D::BulletSet> allBulletsSets;
+    inline std::vector<std::shared_ptr<AngryBomb3D::BulletSet>> notEmptyBulletsSets;
+    inline std::vector<std::shared_ptr<AngryBomb3D::BulletSet>> emptyBulletsSetsWithActiveBullets;
     inline int currentBulletSetIndex = 0;
 
     // Map.
@@ -66,7 +67,7 @@ namespace EnumsAndVars
 
         showPlayerMoveArrows = false;
 
-        allBulletsSets.clear();
+        notEmptyBulletsSets.clear();
         currentBulletSetIndex = 0;
 
         // Map.

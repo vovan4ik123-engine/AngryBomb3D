@@ -50,7 +50,7 @@ namespace AngryBomb3D
         for(const auto& env : dynamicEnv1)
         {
             env->setFriction(1.0f);
-            env->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
+            env->setGravity(glm::vec3{0.0f, -40.0f, 0.0f});
             m_simpleObjForShadowMap.push_back(env);
             m_animatedOrDynamicObjects.push_back(env);
             m_allEnv.push_back(env);

@@ -29,6 +29,14 @@ namespace AngryBomb3D
 
         EnumsAndVars::mapPlayTimeSec += Beryll::TimeStep::getTimeStepSec();
 
+        for(int i = 0; i < EnumsAndVars::notEmptyBulletsSets.size(); ++i)
+        {
+            EnumsAndVars::notEmptyBulletsSets[i]->buttonBullet->updateBeforePhysics();
+
+            if(EnumsAndVars::notEmptyBulletsSets[i]->buttonBullet->getIsPressed())
+                EnumsAndVars::currentBulletSetIndex = i;
+        }
+
         handleControls();
         m_player->update();
     }
@@ -56,19 +64,31 @@ namespace AngryBomb3D
         for(auto& enemy : m_allEnemies)
             enemy.update();
 
-        for(auto& bulletSet : EnumsAndVars::allBulletsSets)
-            bulletSet.update();
+        for(auto& bulletSet : EnumsAndVars::notEmptyBulletsSets)
+            bulletSet->update();
 
         handleCollisions();
         //handleWinLose();
 
-        const auto emptyBulletSetIter = std::find_if(EnumsAndVars::allBulletsSets.begin(), EnumsAndVars::allBulletsSets.end(),
-                                                     [](const AngryBomb3D::BulletSet& set){ return set.getAvailableCount() == 0 && !set.getIsAnyBulletActive(); });
-        if (emptyBulletSetIter != EnumsAndVars::allBulletsSets.end())
+        const auto emptyBulletSetIter = std::find_if(EnumsAndVars::notEmptyBulletsSets.begin(), EnumsAndVars::notEmptyBulletsSets.end(),
+                                                                      [](const std::shared_ptr<AngryBomb3D::BulletSet>& set){ return set->getAvailableCount() <= 0; });
+        if (emptyBulletSetIter != EnumsAndVars::notEmptyBulletsSets.end())
         {
-            BR_INFO("%s", "EnumsAndVars::allBulletsSets.erase()");
-            EnumsAndVars::allBulletsSets.erase(emptyBulletSetIter);
+            BR_INFO("%s", "NOT empty bullets sets.erase()");
+            EnumsAndVars::emptyBulletsSetsWithActiveBullets.push_back(*emptyBulletSetIter);
+            EnumsAndVars::notEmptyBulletsSets.erase(emptyBulletSetIter);
             EnumsAndVars::currentBulletSetIndex = 0;
+        }
+
+        for(auto& emptyBulletSet : EnumsAndVars::emptyBulletsSetsWithActiveBullets)
+            emptyBulletSet->update();
+
+        const auto emptyNotActiveBulletSetIter = std::find_if(EnumsAndVars::emptyBulletsSetsWithActiveBullets.begin(), EnumsAndVars::emptyBulletsSetsWithActiveBullets.end(),
+                                                                               [](const std::shared_ptr<AngryBomb3D::BulletSet>& set){ return !set->getIsAnyBulletActive(); });
+        if (emptyNotActiveBulletSetIter != EnumsAndVars::emptyBulletsSetsWithActiveBullets.end())
+        {
+            BR_INFO("%s", "empty bullets sets.erase()");
+            EnumsAndVars::emptyBulletsSetsWithActiveBullets.erase(emptyNotActiveBulletSetIter);
         }
 
         handleCamera();
@@ -108,6 +128,18 @@ namespace AngryBomb3D
         m_simpleObjSunLightShadows->setMatrix3x3Float("normalMatrix", glm::mat3(modelMatrix));
         Beryll::Renderer::drawObject(m_player->getObj(), modelMatrix, m_simpleObjSunLightShadows);
 
+        for(const auto& staticObj : m_allEnv)
+        {
+            if(staticObj->getIsEnabledDraw())
+            {
+                modelMatrix = staticObj->getModelMatrix();
+                m_simpleObjSunLightShadows->setMatrix4x4Float("MVPLightMatrix", m_sunLightVPMatrix * modelMatrix);
+                m_simpleObjSunLightShadows->setMatrix4x4Float("modelMatrix", modelMatrix);
+                m_simpleObjSunLightShadows->setMatrix3x3Float("normalMatrix", glm::mat3(modelMatrix));
+                Beryll::Renderer::drawObject(staticObj, modelMatrix, m_simpleObjSunLightShadows);
+            }
+        }
+
         for(const auto& enemy : m_allEnemies)
         {
             if(enemy.getObj()->getIsEnabledDraw())
@@ -145,41 +177,41 @@ namespace AngryBomb3D
 
         m_skyBox->draw();
 
-        m_simpleObjSemiTransparent->bind();
-        m_simpleObjSemiTransparent->set3Float("sunLightDir", m_sunLightDir);
-        m_simpleObjSemiTransparent->set3Float("cameraPos", camPos);
-        m_simpleObjSemiTransparent->set1Float("ambientLight", m_ambientLight);
-        m_simpleObjSemiTransparent->set1Float("sunLightStrength", 0.75f);
-        m_simpleObjSemiTransparent->set1Float("specularLightStrength", 0.2f);
-        if(m_bulletTrajectory.getIsHit())
-        {
-            const glm::vec3 hitDir = glm::normalize(m_bulletTrajectory.getHitPoint() - camPos);
-            float hitDistance = glm::distance(m_bulletTrajectory.getHitPoint(), camPos);
-            hitDistance = glm::max(10.0f, hitDistance - 10.0f);
-            m_simpleObjSemiTransparent->set1Int("trajectoryHasHit", 1);
-            m_simpleObjSemiTransparent->set3Float("trajectoryHitPoint", camPos + (hitDir * hitDistance));
-        }
-        else
-        {
-            m_simpleObjSemiTransparent->set1Int("trajectoryHasHit", 0);
-        }
-
-        std::sort(m_allEnv.begin(), m_allEnv.end(), [&](std::shared_ptr<Beryll::BaseSimpleObject>& o1, std::shared_ptr<Beryll::BaseSimpleObject>& o2)
-        {
-            return (glm::distance(camPos, o1->getOrigin()) > glm::distance(camPos, o2->getOrigin()));
-        });
-
-        for(const auto& staticObj : m_allEnv)
-        {
-            if(staticObj->getIsEnabledDraw())
-            {
-                modelMatrix = staticObj->getModelMatrix();
-                m_simpleObjSemiTransparent->setMatrix4x4Float("MVPLightMatrix", m_sunLightVPMatrix * modelMatrix);
-                m_simpleObjSemiTransparent->setMatrix4x4Float("modelMatrix", modelMatrix);
-                m_simpleObjSemiTransparent->setMatrix3x3Float("normalMatrix", glm::mat3(modelMatrix));
-                Beryll::Renderer::drawObject(staticObj, modelMatrix, m_simpleObjSemiTransparent);
-            }
-        }
+//        m_simpleObjSemiTransparent->bind();
+//        m_simpleObjSemiTransparent->set3Float("sunLightDir", m_sunLightDir);
+//        m_simpleObjSemiTransparent->set3Float("cameraPos", camPos);
+//        m_simpleObjSemiTransparent->set1Float("ambientLight", m_ambientLight);
+//        m_simpleObjSemiTransparent->set1Float("sunLightStrength", 0.75f);
+//        m_simpleObjSemiTransparent->set1Float("specularLightStrength", 0.2f);
+//        if(m_bulletTrajectory.getIsHit())
+//        {
+//            const glm::vec3 hitDir = glm::normalize(m_bulletTrajectory.getHitPoint() - camPos);
+//            float hitDistance = glm::distance(m_bulletTrajectory.getHitPoint(), camPos);
+//            hitDistance = glm::max(10.0f, hitDistance - 10.0f);
+//            m_simpleObjSemiTransparent->set1Int("trajectoryHasHit", 1);
+//            m_simpleObjSemiTransparent->set3Float("trajectoryHitPoint", camPos + (hitDir * hitDistance));
+//        }
+//        else
+//        {
+//            m_simpleObjSemiTransparent->set1Int("trajectoryHasHit", 0);
+//        }
+//
+//        std::sort(m_allEnv.begin(), m_allEnv.end(), [&](std::shared_ptr<Beryll::BaseSimpleObject>& o1, std::shared_ptr<Beryll::BaseSimpleObject>& o2)
+//        {
+//            return (glm::distance(camPos, o1->getOrigin()) > glm::distance(camPos, o2->getOrigin()));
+//        });
+//
+//        for(const auto& staticObj : m_allEnv)
+//        {
+//            if(staticObj->getIsEnabledDraw())
+//            {
+//                modelMatrix = staticObj->getModelMatrix();
+//                m_simpleObjSemiTransparent->setMatrix4x4Float("MVPLightMatrix", m_sunLightVPMatrix * modelMatrix);
+//                m_simpleObjSemiTransparent->setMatrix4x4Float("modelMatrix", modelMatrix);
+//                m_simpleObjSemiTransparent->setMatrix3x3Float("normalMatrix", glm::mat3(modelMatrix));
+//                Beryll::Renderer::drawObject(staticObj, modelMatrix, m_simpleObjSemiTransparent);
+//            }
+//        }
     }
 
     void BaseMap::loadShaders()
@@ -268,9 +300,9 @@ namespace AngryBomb3D
             bullets.push_back(bullet);
         }
 
-        EnumsAndVars::allBulletsSets.emplace_back(type, std::move(bullets), disableTimeAfterFirstCollision);
+        EnumsAndVars::notEmptyBulletsSets.push_back(std::make_shared<AngryBomb3D::BulletSet>(type, std::move(bullets), disableTimeAfterFirstCollision));
 
-        BR_INFO("EnumsAndVars::allBulletsSets.size() %d", EnumsAndVars::allBulletsSets.size());
+        BR_INFO("EnumsAndVars::notEmptyBulletsSets.size() %d", EnumsAndVars::notEmptyBulletsSets.size());
     }
 
     void BaseMap::handleControls()
@@ -281,16 +313,30 @@ namespace AngryBomb3D
         if(m_gui->buttonMoveRight->getIsPressed())
             m_player->moveRight();
 
-        if(m_gui->buttonShot->getIsPressed())
+        if(m_gui->buttonShot->getIsPressed() && !EnumsAndVars::notEmptyBulletsSets.empty())
         {
             //m_gui->sliderPower->setValue(0.0f);
-            EnumsAndVars::allBulletsSets[EnumsAndVars::currentBulletSetIndex].shoot(m_bulletStartPosition, m_bulletImpulseVector);
+            EnumsAndVars::notEmptyBulletsSets[EnumsAndVars::currentBulletSetIndex]->shoot(m_bulletStartPosition, m_bulletImpulseVector);
         }
     }
 
     void BaseMap::handleCollisions()
     {
-        if(EnumsAndVars::allBulletsSets[EnumsAndVars::currentBulletSetIndex].getIsAnyBulletHasCollision())
+        float anyBulletHasCollision = false;
+
+        for(auto& bulletSet : EnumsAndVars::notEmptyBulletsSets)
+        {
+            if(bulletSet->getIsAnyBulletHasCollision())
+                anyBulletHasCollision = true;
+        }
+
+        for(auto& emptyBulletSet : EnumsAndVars::emptyBulletsSetsWithActiveBullets)
+        {
+            if(emptyBulletSet->getIsAnyBulletHasCollision())
+                anyBulletHasCollision = true;
+        }
+
+        if(anyBulletHasCollision)
         {
             BR_INFO("%s", "Make active all dynamic objects.")
 
@@ -320,7 +366,7 @@ namespace AngryBomb3D
                 DataBaseHelper::storeMapsProgressLastOpenedMapIndex(EnumsAndVars::MapsProgress::lastOpenedMapIndex);
             }
         }
-        else if(EnumsAndVars::allBulletsSets.empty() && !getIsDynamicObjectsMoves())
+        else if(EnumsAndVars::notEmptyBulletsSets.empty() && !getIsDynamicObjectsMoves())
         {
             BR_INFO("%s", "Player lose.");
             EnumsAndVars::mapPlayerLose = true;
