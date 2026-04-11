@@ -22,6 +22,10 @@ namespace AngryBomb3D
             m_guiObjects.push_back(m_statistics3);
         }
 
+        buttonCancel = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/Cancel.png", "",
+                                                                   glm::vec3{0.0f, 86.0f, 0.5f}, glm::vec2{14.0f / screenAR, 14.0f});
+        m_guiObjects.push_back(buttonCancel);
+
         sliderPower = std::make_shared<Beryll::SliderVertical>("GUI/SliderVerticalTrack.png", "GUI/SliderVerticalThumb.png",
                                                                glm::vec3{8.0f, 10.0f, 0.5f}, glm::vec2{3.0f, 50.0f}, 0.0f, 300.0f);
         m_guiObjects.push_back(sliderPower);
@@ -102,22 +106,29 @@ namespace AngryBomb3D
             }
         }
 
+        if(buttonCancel->getIsPressed())
+        {
+            GameStateHelper::popState();
+            GameStateHelper::pushStartMenuState();
+            return;
+        }
+
 //        if(m_nextMapButtonPressed)
 //        {
-//            AngryBomb3D::GameStateHelper::popState();
+//            GameStateHelper::popState();
 //            ++EnumsAndVars::MapsProgress::currentMapIndex;
 //            DataBaseHelper::storeMapsProgressCurrentMapIndex(EnumsAndVars::MapsProgress::currentMapIndex);
-//            AngryBomb3D::GameStateHelper::pushPlayState();
+//            GameStateHelper::pushPlayState();
 //        }
 //        else if(m_replayMapButtonPressed)
 //        {
-//            AngryBomb3D::GameStateHelper::popState();
-//            AngryBomb3D::GameStateHelper::pushPlayState();
+//            GameStateHelper::popState();
+//            GameStateHelper::pushPlayState();
 //        }
 //        else if(m_exitButtonPressed)
 //        {
-//            AngryBomb3D::GameStateHelper::popState();
-//            AngryBomb3D::GameStateHelper::pushStartMenuState();
+//            GameStateHelper::popState();
+//            GameStateHelper::pushStartMenuState();
 //        }
     }
 

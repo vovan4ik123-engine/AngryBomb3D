@@ -36,7 +36,7 @@ namespace AngryBomb3D
                                                                                      Beryll::CollisionGroups::STATIC_ENVIRONMENT,
                                                                                      Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT | Beryll::CollisionGroups::PLAYER_BULLET,
                                                                                      Beryll::SceneObjectGroups::GROUND);
-        ground->setFriction(0.5f);
+        ground->setFriction(1.0f);
         m_allEnv.push_back(ground);
 
         auto staticEnv = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map/StaticEnv.fbx",

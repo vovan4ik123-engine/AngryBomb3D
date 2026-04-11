@@ -15,6 +15,7 @@ namespace AngryBomb3D
         void draw() override;
 
 
+        std::shared_ptr<Beryll::ButtonWithTexture> buttonCancel;
         std::shared_ptr<Beryll::ButtonWithTexture> buttonShot;
         std::shared_ptr<Beryll::ButtonWithTexture> buttonMoveLeft;
         std::shared_ptr<Beryll::ButtonWithTexture> buttonMoveRight;

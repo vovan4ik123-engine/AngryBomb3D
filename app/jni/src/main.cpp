@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
     Beryll::Camera::setProjectionFarClipPlane(1000.0f);
     Beryll::Camera::setObjectsViewDistance(1000.0f);
 
-    Beryll::Physics::setResolution(2);
+    Beryll::Physics::setResolution(3);
     Beryll::Physics::setMinAcceptableFPS(20.0f);
 
     //Beryll::LoadingScreen::setTextures({"GUI/LoadingScreen1.jpg"});

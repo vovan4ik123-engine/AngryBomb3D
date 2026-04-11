@@ -34,7 +34,7 @@ namespace EnumsAndVars
     {
         // Stored in DB.
         static inline int currentMapIndex = 0; // Index of selected map on start screen.
-        static inline int lastOpenedMapIndex = 2; // Last index of map available for select and play.
+        static inline int lastOpenedMapIndex = 3; // Last index of map available for select and play.
         // Not stored in DB.
         static constexpr inline int maxMapIndex = 10; // Last possible map index (opened or not). Must be hardcoded before release.
         static inline int mapIndexWhenMapStart = 0;
