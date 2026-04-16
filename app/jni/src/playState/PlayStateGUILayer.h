@@ -29,7 +29,7 @@ namespace AngryBomb3D
 #if defined(BR_DEBUG)
         bool m_statisticsShow = true;
 #else
-        bool m_statisticsShow = false;
+        bool m_statisticsShow = true;
 #endif
         std::shared_ptr<Beryll::GUIText> m_statistics1;
         std::shared_ptr<Beryll::GUIText> m_statistics2;

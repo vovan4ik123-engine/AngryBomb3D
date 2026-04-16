@@ -64,33 +64,9 @@ namespace AngryBomb3D
         for(auto& enemy : m_allEnemies)
             enemy.update();
 
-        for(auto& bulletSet : EnumsAndVars::notEmptyBulletsSets)
-            bulletSet->update();
-
-        handleCollisions();
+        handleBulletsSets();
+        //handleCollisions();
         //handleWinLose();
-
-        const auto emptyBulletSetIter = std::find_if(EnumsAndVars::notEmptyBulletsSets.begin(), EnumsAndVars::notEmptyBulletsSets.end(),
-                                                                      [](const std::shared_ptr<AngryBomb3D::BulletSet>& set){ return set->getAvailableCount() <= 0; });
-        if (emptyBulletSetIter != EnumsAndVars::notEmptyBulletsSets.end())
-        {
-            BR_INFO("%s", "NOT empty bullets sets.erase()");
-            EnumsAndVars::emptyBulletsSetsWithActiveBullets.push_back(*emptyBulletSetIter);
-            EnumsAndVars::notEmptyBulletsSets.erase(emptyBulletSetIter);
-            EnumsAndVars::currentBulletSetIndex = 0;
-        }
-
-        for(auto& emptyBulletSet : EnumsAndVars::emptyBulletsSetsWithActiveBullets)
-            emptyBulletSet->update();
-
-        const auto emptyNotActiveBulletSetIter = std::find_if(EnumsAndVars::emptyBulletsSetsWithActiveBullets.begin(), EnumsAndVars::emptyBulletsSetsWithActiveBullets.end(),
-                                                                               [](const std::shared_ptr<AngryBomb3D::BulletSet>& set){ return !set->getIsAnyBulletActive(); });
-        if (emptyNotActiveBulletSetIter != EnumsAndVars::emptyBulletsSetsWithActiveBullets.end())
-        {
-            BR_INFO("%s", "empty bullets sets.erase()");
-            EnumsAndVars::emptyBulletsSetsWithActiveBullets.erase(emptyNotActiveBulletSetIter);
-        }
-
         handleCamera();
 
         if(m_player->getIsMoving())
@@ -320,9 +296,36 @@ namespace AngryBomb3D
         }
     }
 
+    void BaseMap::handleBulletsSets()
+    {
+        for(auto& bulletSet : EnumsAndVars::notEmptyBulletsSets)
+            bulletSet->update();
+
+        for(auto& emptyBulletSet : EnumsAndVars::emptyBulletsSetsWithActiveBullets)
+            emptyBulletSet->update();
+
+        const auto emptyBulletSetIter = std::find_if(EnumsAndVars::notEmptyBulletsSets.begin(), EnumsAndVars::notEmptyBulletsSets.end(),
+                                                     [](const std::shared_ptr<AngryBomb3D::BulletSet>& set){ return set->getAvailableCount() <= 0; });
+        if (emptyBulletSetIter != EnumsAndVars::notEmptyBulletsSets.end())
+        {
+            BR_INFO("%s", "Not empty bullets sets.erase()");
+            EnumsAndVars::emptyBulletsSetsWithActiveBullets.push_back(*emptyBulletSetIter);
+            EnumsAndVars::notEmptyBulletsSets.erase(emptyBulletSetIter);
+            EnumsAndVars::currentBulletSetIndex = 0;
+        }
+
+        const auto emptyNotActiveBulletSetIter = std::find_if(EnumsAndVars::emptyBulletsSetsWithActiveBullets.begin(), EnumsAndVars::emptyBulletsSetsWithActiveBullets.end(),
+                                                              [](const std::shared_ptr<AngryBomb3D::BulletSet>& set){ return !set->getIsAnyBulletActive(); });
+        if (emptyNotActiveBulletSetIter != EnumsAndVars::emptyBulletsSetsWithActiveBullets.end())
+        {
+            BR_INFO("%s", "Empty bullets sets.erase()");
+            EnumsAndVars::emptyBulletsSetsWithActiveBullets.erase(emptyNotActiveBulletSetIter);
+        }
+    }
+
     void BaseMap::handleCollisions()
     {
-        float anyBulletHasCollision = false;
+        bool anyBulletHasCollision = false;
 
         for(auto& bulletSet : EnumsAndVars::notEmptyBulletsSets)
         {

@@ -49,8 +49,8 @@ namespace AngryBomb3D
                                                                                   Beryll::SceneObjectGroups::DYNAMIC_ENVIRONMENT);
         for(const auto& env : dynamicEnv1)
         {
-            env->setFriction(5.0f);
-            env->setGravity(glm::vec3{0.0f, -15.0f, 0.0f});
+            env->setFriction(2.0f);
+            env->setGravity(glm::vec3{0.0f, -30.0f, 0.0f});
             m_simpleObjForShadowMap.push_back(env);
             m_animatedOrDynamicObjects.push_back(env);
             m_allEnv.push_back(env);

@@ -25,6 +25,7 @@ namespace AngryBomb3D
         void loadBulletSet(const BulletType type, const int count, const float disableTimeAfterFirstCollision);
 
         void handleControls();
+        void handleBulletsSets();
         void handleCollisions();
         void handleWinLose();
         void handleCamera();
