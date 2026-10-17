@@ -53,7 +53,7 @@ namespace AngryBomb3D
             {
                 so->updateAfterPhysics();
 
-                if(so->getSceneObjectGroup() == Beryll::SceneObjectGroups::DYNAMIC_ENVIRONMENT && so->getOrigin().y < -5.0f)
+                if(so->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMIC_ENV && so->getOrigin().y < -5.0f)
                 {
                     so->disableForEver();
                     BR_INFO("%s", "so->disableForEver();");
@@ -231,12 +231,12 @@ namespace AngryBomb3D
     void BaseMap::loadPlayer()
     {
         auto playerModel = std::make_shared<Beryll::SimpleCollidingObject>("models3D/player/Player1.fbx",
-                                                                                          0,
-                                                                                          true,
-                                                                                          Beryll::CollisionFlags::STATIC,
-                                                                                          Beryll::CollisionGroups::PLAYER,
-                                                                                          Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-                                                                                          Beryll::SceneObjectGroups::PLAYER);
+                                                                           0,
+                                                                           true,
+                                                                           Beryll::CollisionFlags::STATIC,
+                                                                           EnumsAndVars::CollGr_PLAYER,
+                                                                           EnumsAndVars::CollGr_DYNAMIC_ENV,
+                                                                           EnumsAndVars::SceneGR_PLAYER);
 
         m_simpleObjForShadowMap.push_back(playerModel);
         m_player = std::make_shared<Player>(playerModel, 100);
@@ -265,9 +265,9 @@ namespace AngryBomb3D
                                                                           bulletMass,
                                                                           true,
                                                                           Beryll::CollisionFlags::DYNAMIC,
-                                                                          Beryll::CollisionGroups::PLAYER_BULLET,
-                                                                          Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT | Beryll::CollisionGroups::STATIC_ENVIRONMENT,
-                                                                          Beryll::SceneObjectGroups::BULLET);
+                                                                          EnumsAndVars::CollGr_PLAYER_BULLET,
+                                                                          EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_STATIC_ENV,
+                                                                          EnumsAndVars::SceneGR_PLAYER_BULLET);
 
             m_animatedOrDynamicObjects.push_back(bullet);
             m_simpleObjForShadowMap.push_back(bullet);
@@ -345,7 +345,7 @@ namespace AngryBomb3D
 
             for(const std::shared_ptr<Beryll::SceneObject>& so : m_animatedOrDynamicObjects)
             {
-                if(so->getIsEnabledUpdate() && so->getSceneObjectGroup() == Beryll::SceneObjectGroups::DYNAMIC_ENVIRONMENT)
+                if(so->getIsEnabledUpdate() && so->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMIC_ENV)
                 {
                     so->activate();
                 }
@@ -380,7 +380,7 @@ namespace AngryBomb3D
     {
         for(const std::shared_ptr<Beryll::SceneObject>& so : m_animatedOrDynamicObjects)
         {
-            if(so->getSceneObjectGroup() != Beryll::SceneObjectGroups::BULLET &&
+            if(so->getSceneObjectGroup() != EnumsAndVars::SceneGR_PLAYER_BULLET &&
                glm::length(so->getOrigin()) < m_player->getFarthestPointDistance() * 1.2f &&
                (glm::length(so->getLinearVelocity()) > 1.0f || glm::length(so->getAngularVelocity()) > 1.0f))
             {
@@ -397,7 +397,7 @@ namespace AngryBomb3D
         const std::vector<Beryll::Finger>& fingers = Beryll::EventHandler::getFingers();
         for(const Beryll::Finger& f : fingers)
         {
-            if(f.handled || f.normalizedPos.x < 0.5f)
+            if(f.normalizedPos.x < 0.5f)
                 continue;
 
             m_gui->showTutorialCameraTip = false;
@@ -521,16 +521,18 @@ namespace AngryBomb3D
         //Beryll::Camera::setCameraPos(Beryll::Camera::getCameraPos() + glm::vec3(0.0f, m_player->getObj()->getOrigin().y * 0.7f, 0.0f));
 
         // Update shoot dir after camera.
-        const float factorToReduceAngle = std::pow(m_gui->sliderPower->getValue() / m_gui->sliderPower->getMax(), 1.0f/2.4f); // sqrt_2.4 (x)
-        const float addToThrowAngleRadians = glm::radians(60.0f - (factorToReduceAngle * 46.0f));
+        const float sliderRatio_0_1 = m_gui->sliderPower->getValue() / m_gui->sliderPower->getMax();
+        const float baseAddedAngle =              80.0f;
+        const float substrAngleWhenPowerGrowing = 77.5f * std::pow(sliderRatio_0_1, 0.185f);
+        const float addAngleAtMaxPower =          5.5f * std::pow(sliderRatio_0_1, 1.85f);
         const float angleBetweenWorldUpAndCameraBack = BeryllUtils::Common::getAngleInRadians(BeryllConstants::worldUp, Beryll::Camera::getCameraBackDirectionXYZ());
         EnumsAndVars::throwAngleRadians = angleBetweenWorldUpAndCameraBack - glm::half_pi<float>();
-        EnumsAndVars::throwAngleRadians += addToThrowAngleRadians;
+        EnumsAndVars::throwAngleRadians += glm::radians(baseAddedAngle - substrAngleWhenPowerGrowing + addAngleAtMaxPower);
 
         m_bulletImpulseVector = m_player->getObj()->getFaceDirXZ();
         m_bulletImpulseVector.y = glm::tan(EnumsAndVars::throwAngleRadians);
         m_bulletImpulseVector = glm::normalize(m_bulletImpulseVector);
-        m_bulletImpulseVector *= EnumsAndVars::throwPowerDefault + m_gui->sliderPower->getValue();
+        m_bulletImpulseVector *= m_gui->sliderPower->getValue();
 
         m_bulletStartPosition = m_player->getObj()->getOrigin() + m_player->getObj()->getFaceDirXZ() * 2.0f;
         m_bulletStartPosition.y += 3.0f;

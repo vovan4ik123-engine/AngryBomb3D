@@ -1,4 +1,5 @@
 #include "BaseEnemy.h"
+#include "EnumsAndVariables.h"
 
 namespace AngryBomb3D
 {
@@ -25,7 +26,7 @@ namespace AngryBomb3D
             return;
 
         if(glm::distance(m_startPosition, m_obj->getOrigin()) > 10.0f ||
-           Beryll::Physics::getIsCollisionWithGroup(m_obj->getID(), Beryll::CollisionGroups::PLAYER_BULLET))
+           Beryll::Physics::getIsCollisionWithGroup(m_obj->getID(), EnumsAndVars::CollGr_PLAYER_BULLET))
         {
             die();
         }

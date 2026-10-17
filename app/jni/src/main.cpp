@@ -30,9 +30,10 @@ int main(int argc, char* argv[])
     Beryll::Camera::setCameraFov(45.0f);
     Beryll::Camera::setProjectionNearClipPlane(5.0f);
     Beryll::Camera::setProjectionFarClipPlane(1000.0f);
-    Beryll::Camera::setObjectsViewDistance(1000.0f);
+    Beryll::Camera::setViewDistance(1000.0f);
 
     Beryll::Physics::setResolution(5);
+    Beryll::Physics::setContactSolverIterations(15);
     Beryll::Physics::setMinAcceptableFPS(20.0f);
 
     //Beryll::LoadingScreen::setTextures({"GUI/LoadingScreen1.jpg"});

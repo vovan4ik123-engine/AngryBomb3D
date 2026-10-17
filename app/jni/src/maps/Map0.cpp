@@ -33,9 +33,9 @@ namespace AngryBomb3D
                                                                                      0.0f,
                                                                                      false,
                                                                                      Beryll::CollisionFlags::STATIC,
-                                                                                     Beryll::CollisionGroups::STATIC_ENVIRONMENT,
-                                                                                     Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT | Beryll::CollisionGroups::PLAYER_BULLET,
-                                                                                     Beryll::SceneObjectGroups::GROUND);
+                                                                                     EnumsAndVars::CollGr_STATIC_ENV,
+                                                                                     EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
+                                                                                     EnumsAndVars::SceneGR_GROUND);
         ground->setFriction(1.0f);
         m_allEnv.push_back(ground);
 
@@ -43,9 +43,9 @@ namespace AngryBomb3D
                                                                                   0.0f,
                                                                                   false,
                                                                                   Beryll::CollisionFlags::STATIC,
-                                                                                  Beryll::CollisionGroups::STATIC_ENVIRONMENT,
-                                                                                  Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT | Beryll::CollisionGroups::PLAYER_BULLET,
-                                                                                  Beryll::SceneObjectGroups::STATIC_ENVIRONMENT);
+                                                                                  EnumsAndVars::CollGr_STATIC_ENV,
+                                                                                  EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
+                                                                                  EnumsAndVars::SceneGR_STATIC_ENV);
         for(const auto& env : staticEnv)
         {
             env->setFriction(0.5f);
@@ -57,10 +57,10 @@ namespace AngryBomb3D
                                                                                   1.0f,
                                                                                   false,
                                                                                   Beryll::CollisionFlags::DYNAMIC,
-                                                                                  Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-                                                                                  Beryll::CollisionGroups::STATIC_ENVIRONMENT | Beryll::CollisionGroups::PLAYER_BULLET |
-                                                                                            Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-                                                                                  Beryll::SceneObjectGroups::DYNAMIC_ENVIRONMENT);
+                                                                                  EnumsAndVars::CollGr_DYNAMIC_ENV,
+                                                                                  EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
+                                                                                            EnumsAndVars::CollGr_DYNAMIC_ENV,
+                                                                                  EnumsAndVars::SceneGR_DYNAMIC_ENV);
         for(const auto& env : dynamicEnv1)
         {
             env->setFriction(0.5f);
@@ -77,10 +77,10 @@ namespace AngryBomb3D
 //                                                                                1.0f,
 //                                                                                true,
 //                                                                                Beryll::CollisionFlags::DYNAMIC,
-//                                                                                Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-//                                                                                Beryll::CollisionGroups::STATIC_ENVIRONMENT | Beryll::CollisionGroups::PLAYER_BULLET |
-//                                                                                Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-//                                                                                Beryll::SceneObjectGroups::DYNAMIC_ENVIRONMENT);
+//                                                                                EnumsAndVars::CollGr_DYNAMIC_ENV,
+//                                                                                EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
+//                                                                                EnumsAndVars::CollGr_DYNAMIC_ENV,
+//                                                                                EnumsAndVars::SceneGR_DYNAMIC_ENV);
 //        for(const auto& enemy : enemies)
 //        {
 //            enemy->setFriction(0.5f);
@@ -92,7 +92,7 @@ namespace AngryBomb3D
 
     void Map0::loadPlayerPoints()
     {
-        auto points = Beryll::SimpleObject::loadManyModelsFromOneFile("models3D/map0/PlayerPoints.fbx", Beryll::SceneObjectGroups::GROUND);
+        auto points = Beryll::SimpleObject::loadManyModelsFromOneFile("models3D/map0/PlayerPoints.fbx", EnumsAndVars::SceneGR_GROUND);
 
         std::vector<glm::vec3> origins;
         origins.reserve(points.size());

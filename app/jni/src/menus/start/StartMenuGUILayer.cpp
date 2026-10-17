@@ -96,13 +96,9 @@ namespace AngryBomb3D
     {
         // Map swipe left enable.
         if(EnumsAndVars::MapsProgress::currentMapIndex > 0)
-        {
             m_buttonMapSwipeLeft->enable();
-        }
         else
-        {
             m_buttonMapSwipeLeft->disable();
-        }
 
         // Map swipe right enable.
         if(EnumsAndVars::MapsProgress::currentMapIndex < EnumsAndVars::MapsProgress::lastOpenedMapIndex &&

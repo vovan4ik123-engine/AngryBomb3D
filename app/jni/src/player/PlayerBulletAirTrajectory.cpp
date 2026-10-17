@@ -1,4 +1,5 @@
 #include "PlayerBulletAirTrajectory.h"
+#include "EnumsAndVariables.h"
 
 namespace AngryBomb3D
 {
@@ -50,7 +51,7 @@ namespace AngryBomb3D
 
         //BR_INFO("throwPower %f", throwPower);
         // Calculate some points on fly trajectory.
-        for(int i = 0; i <= (60 - int(std::roundf(throwPower * 2.0f))); ++i)
+        for(int i = 0; i <= (45 - int(std::roundf(throwPower * 2.0f))); ++i)
         {
             // Point every float(i * i)... meters on trajectory !!! Not on ground !!!
             if(i == 0)
@@ -84,8 +85,8 @@ namespace AngryBomb3D
                 previousToCurrent = currentPoint - previousPoint;
                 Beryll::RayClosestHit hit = Beryll::Physics::castRayClosestHit(previousPoint - previousToCurrent,
                                                                                currentPoint + previousToCurrent,
-                                                                               Beryll::CollisionGroups::PLAYER_BULLET,
-                                                                               Beryll::CollisionGroups::STATIC_ENVIRONMENT | Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT);
+                                                                               EnumsAndVars::CollGr_PLAYER_BULLET,
+                                                                               EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_DYNAMIC_ENV);
 
                 if(hit)
                 {

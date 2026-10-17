@@ -29,28 +29,29 @@ namespace AngryBomb3D
 
     void Map2::loadEnv()
     {
-        auto ground = std::make_shared<Beryll::SimpleCollidingObject>("models3D/mapCommon/Ground_500.fbx",
+        auto ground = std::make_shared<Beryll::SimpleCollidingObject>("models3D/mapCommon/Ground_400.fbx",
                                                                                      0.0f,
                                                                                      false,
                                                                                      Beryll::CollisionFlags::STATIC,
-                                                                                     Beryll::CollisionGroups::STATIC_ENVIRONMENT,
-                                                                                     Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT | Beryll::CollisionGroups::PLAYER_BULLET,
-                                                                                     Beryll::SceneObjectGroups::GROUND);
+                                                                                     EnumsAndVars::CollGr_STATIC_ENV,
+                                                                                     EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
+                                                                                     EnumsAndVars::SceneGR_GROUND);
         ground->setFriction(1.0f);
         m_allEnv.push_back(ground);
 
-        auto dynamicEnv1 = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map2/Dynamic_2kg_1friction.fbx",
-                                                                                  2.0f,
-                                                                                  false,
-                                                                                  Beryll::CollisionFlags::DYNAMIC,
-                                                                                  Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-                                                                                  Beryll::CollisionGroups::STATIC_ENVIRONMENT | Beryll::CollisionGroups::PLAYER_BULLET |
-                                                                                            Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-                                                                                  Beryll::SceneObjectGroups::DYNAMIC_ENVIRONMENT);
+        auto dynamicEnv1 = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map2/DynamicObjects.fbx",
+                                                                                    5.0f,
+                                                                                    false,
+                                                                                    Beryll::CollisionFlags::DYNAMIC,
+                                                                                    EnumsAndVars::CollGr_DYNAMIC_ENV,
+                                                                                    EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
+                                                                                            EnumsAndVars::CollGr_DYNAMIC_ENV,
+                                                                                    EnumsAndVars::SceneGR_DYNAMIC_ENV);
         for(const auto& env : dynamicEnv1)
         {
             env->setFriction(1.0f);
-            env->setGravity(glm::vec3{0.0f, -45.0f, 0.0f});
+            env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            env->setDamping(0.1f, 0.25f);
             m_simpleObjForShadowMap.push_back(env);
             m_animatedOrDynamicObjects.push_back(env);
             m_allEnv.push_back(env);
@@ -63,9 +64,9 @@ namespace AngryBomb3D
 //                                                                                1.0f,
 //                                                                                true,
 //                                                                                Beryll::CollisionFlags::DYNAMIC,
-//                                                                                Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-//                                                                                Beryll::CollisionGroups::STATIC_ENVIRONMENT | Beryll::CollisionGroups::PLAYER_BULLET | Beryll::CollisionGroups::DYNAMIC_ENVIRONMENT,
-//                                                                                Beryll::SceneObjectGroups::DYNAMIC_ENVIRONMENT);
+//                                                                                EnumsAndVars::CollGr_DYNAMIC_ENV,
+//                                                                                EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET | EnumsAndVars::CollGr_DYNAMIC_ENV,
+//                                                                                EnumsAndVars::SceneGR_DYNAMIC_ENV);
 //        for(const auto& enemy : enemies)
 //        {
 //            enemy->setFriction(0.5f);
@@ -77,7 +78,7 @@ namespace AngryBomb3D
 
     void Map2::loadPlayerPoints()
     {
-        auto points = Beryll::SimpleObject::loadManyModelsFromOneFile("models3D/map2/PlayerPoints.fbx", Beryll::SceneObjectGroups::GROUND);
+        auto points = Beryll::SimpleObject::loadManyModelsFromOneFile("models3D/map2/PlayerPoints.fbx", EnumsAndVars::SceneGR_GROUND);
 
         std::vector<glm::vec3> origins;
         origins.reserve(points.size());

@@ -36,9 +36,20 @@ namespace EnumsAndVars
         static inline int currentMapIndex = 0; // Index of selected map on start screen.
         static inline int lastOpenedMapIndex = 3; // Last index of map available for select and play.
         // Not stored in DB.
-        static constexpr inline int maxMapIndex = 10; // Last possible map index (opened or not). Must be hardcoded before release.
+        static constexpr inline int maxMapIndex = 3; // Last possible map index (opened or not). Must be hardcoded before release.
         static inline int mapIndexWhenMapStart = 0;
     };
+
+    constexpr inline Beryll::CollisionGroups CollGr_DYNAMIC_ENV = Beryll::CollisionGroups::GROUP_1;
+    constexpr inline Beryll::CollisionGroups CollGr_STATIC_ENV = Beryll::CollisionGroups::GROUP_2;
+    constexpr inline Beryll::CollisionGroups CollGr_PLAYER = Beryll::CollisionGroups::GROUP_3;
+    constexpr inline Beryll::CollisionGroups CollGr_PLAYER_BULLET = Beryll::CollisionGroups::GROUP_4;
+
+    constexpr inline Beryll::SceneObjectGroups SceneGR_DYNAMIC_ENV = Beryll::SceneObjectGroups::GROUP_1;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_STATIC_ENV = Beryll::SceneObjectGroups::GROUP_2;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_GROUND = Beryll::SceneObjectGroups::GROUP_3;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_PLAYER = Beryll::SceneObjectGroups::GROUP_4;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_PLAYER_BULLET = Beryll::SceneObjectGroups::GROUP_5;
 
     constexpr inline float bulletMass = 1.0f;
     constexpr inline glm::vec3 bulletGravity{0.0f, -60.0f, 0.0f};
