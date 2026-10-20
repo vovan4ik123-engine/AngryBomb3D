@@ -46,7 +46,7 @@ namespace AngryBomb3D
                                                                                     EnumsAndVars::CollGr_DYNAMIC_ENV,
                                                                                     EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
                                                                                             EnumsAndVars::CollGr_DYNAMIC_ENV,
-                                                                                    EnumsAndVars::SceneGR_DYNAMIC_ENV);
+                                                                                    EnumsAndVars::SceneGR_BRICK_WOOD);
         for(const auto& env : dynamicEnv1)
         {
             env->setFriction(2.0f);
@@ -66,7 +66,7 @@ namespace AngryBomb3D
 //                                                                                EnumsAndVars::CollGr_DYNAMIC_ENV,
 //                                                                                EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
 //                                                                                EnumsAndVars::CollGr_DYNAMIC_ENV,
-//                                                                                EnumsAndVars::SceneGR_DYNAMIC_ENV);
+//                                                                                EnumsAndVars::SceneGR_ENEMY);
 //        for(const auto& enemy : enemies)
 //        {
 //            enemy->setFriction(0.5f);
@@ -78,7 +78,7 @@ namespace AngryBomb3D
 
     void Map3::loadPlayerPoints()
     {
-        auto points = Beryll::SimpleObject::loadManyModelsFromOneFile("models3D/map3/PlayerPoints.fbx", EnumsAndVars::SceneGR_GROUND);
+        auto points = Beryll::SimpleObject::loadManyModelsFromOneFile("models3D/map3/PlayerPoints.fbx", EnumsAndVars::SceneGR_NONE);
 
         std::vector<glm::vec3> origins;
         origins.reserve(points.size());

@@ -57,13 +57,13 @@ namespace AngryBomb3D
         glm::vec3 m_sunLightDir{0.0f};
         glm::vec3 m_sunPos{0.0f};
         float m_ambientLight = 0.75f;
-        const float m_shadowsCubeWidthHeight = 400.0f;
+        const float m_shadowsCubeWidthHeight = 300.0f;
 
         // Camera.
         float m_lastFingerMovePosX = 0.0f;
         float m_lastFingerMovePosY = 0.0f;
         float m_eyesLookAngleXZ = 0.0f; // Degrees.
-        float m_eyesLookAngleY = -10.0f; // Degrees.
+        float m_eyesLookAngleY = 0.0f; // Degrees.
         glm::vec3 m_cameraOffset{0.0f};
         glm::vec3 m_cameraFront{0.0f};
         const float m_cameraXZAngleThreshold = 45.0f;

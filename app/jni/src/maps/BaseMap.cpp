@@ -53,7 +53,11 @@ namespace AngryBomb3D
             {
                 so->updateAfterPhysics();
 
-                if(so->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMIC_ENV && so->getOrigin().y < -5.0f)
+                if((so->getSceneObjectGroup() == EnumsAndVars::SceneGR_PLAYER_BULLET ||
+                    so->getSceneObjectGroup() == EnumsAndVars::SceneGR_ENEMY ||
+                    so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS ||
+                    so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_WOOD ||
+                    so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_STONE) && so->getOrigin().y < -5.0f)
                 {
                     so->disableForEver();
                     BR_INFO("%s", "so->disableForEver();");
@@ -65,7 +69,7 @@ namespace AngryBomb3D
             enemy.update();
 
         handleBulletsSets();
-        //handleCollisions();
+        handleCollisions();
         //handleWinLose();
         handleCamera();
 
@@ -80,7 +84,7 @@ namespace AngryBomb3D
         //BR_INFO("%s", "BaseMap::draw()");
 
         // 1. Draw into shadow map.
-        m_sunPos = m_cameraFront + (Beryll::Camera::getCameraFrontDirectionXZ() * 150.0f) + (m_dirToSun * 400.0f);
+        m_sunPos = m_cameraFront + (Beryll::Camera::getCameraFrontDirectionXZ() * 100.0f) + (m_dirToSun * 300.0f);
         updateSunPosition(m_sunPos);
 
         Beryll::Renderer::disableFaceCulling();
@@ -143,13 +147,16 @@ namespace AngryBomb3D
             }
         }
 
-        m_bulletTrajectory.calculateAndDraw(EnumsAndVars::bulletMass,
-                                            EnumsAndVars::bulletGravity,
-                                            m_bulletStartPosition,
-                                            EnumsAndVars::throwAngleRadians,
-                                            m_bulletImpulseVector,
-                                            glm::vec3(1.0f),
-                                            m_sunLightDir);
+        if(m_gui->sliderPower->getValue() > m_gui->sliderPower->getMin() + 5.0f)
+        {
+            m_bulletTrajectory.calculateAndDraw(EnumsAndVars::bulletMass,
+                                                EnumsAndVars::bulletGravity,
+                                                m_bulletStartPosition,
+                                                EnumsAndVars::throwAngleRadians,
+                                                m_bulletImpulseVector,
+                                                glm::vec3(1.0f),
+                                                m_sunLightDir);
+        }
 
         m_skyBox->draw();
 
@@ -222,7 +229,7 @@ namespace AngryBomb3D
 
     void BaseMap::updateSunPosition(const glm::vec3& pos)
     {
-        glm::mat4 lightProjection = glm::ortho(-m_shadowsCubeWidthHeight * 0.5f, m_shadowsCubeWidthHeight * 0.5f, -m_shadowsCubeWidthHeight * 0.5f, m_shadowsCubeWidthHeight * 0.5f, 15.0f, 800.0f);
+        glm::mat4 lightProjection = glm::ortho(-m_shadowsCubeWidthHeight * 0.5f, m_shadowsCubeWidthHeight * 0.5f, -m_shadowsCubeWidthHeight * 0.5f, m_shadowsCubeWidthHeight * 0.5f, 5.0f, 600.0f);
         glm::mat4 lightView = glm::lookAt(pos, pos + m_sunLightDir, BeryllConstants::worldUp);
 
         m_sunLightVPMatrix = lightProjection * lightView;
@@ -325,27 +332,63 @@ namespace AngryBomb3D
 
     void BaseMap::handleCollisions()
     {
-        bool anyBulletHasCollision = false;
+        bool wakeUpObjects = false;
+        std::vector<std::shared_ptr<Beryll::SimpleCollidingObject>> activeBullets;
 
-        for(auto& bulletSet : EnumsAndVars::notEmptyBulletsSets)
+        for(const auto& bulletSet : EnumsAndVars::notEmptyBulletsSets)
         {
             if(bulletSet->getIsAnyBulletHasCollision())
-                anyBulletHasCollision = true;
+                wakeUpObjects = true;
+
+            for(const auto& bullet : bulletSet->getBullets())
+            {
+                if(bullet->getIsEnabledUpdate())
+                    activeBullets.push_back(bullet);
+            }
         }
 
-        for(auto& emptyBulletSet : EnumsAndVars::emptyBulletsSetsWithActiveBullets)
+        for(const auto& emptyBulletSet : EnumsAndVars::emptyBulletsSetsWithActiveBullets)
         {
             if(emptyBulletSet->getIsAnyBulletHasCollision())
-                anyBulletHasCollision = true;
+                wakeUpObjects = true;
+
+            for(const auto& bullet : emptyBulletSet->getBullets())
+            {
+                if(bullet->getIsEnabledUpdate())
+                    activeBullets.push_back(bullet);
+            }
         }
 
-        if(anyBulletHasCollision)
+        for(const auto& bullet : activeBullets)
+        {
+            std::vector<int> bulletCollisions = Beryll::Physics::getAllCollisionsForID(bullet->getID());
+            if(!bulletCollisions.empty())
+            {
+                for(int objCollidingWithID : bulletCollisions)
+                {
+                    for(const auto& objEnv : m_allEnv)
+                    {
+                        if(objEnv->getID() == objCollidingWithID && objEnv->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS)
+                        {
+                            objEnv->disableForEver();
+                            wakeUpObjects = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(wakeUpObjects)
         {
             BR_INFO("%s", "Make active all dynamic objects.")
 
             for(const std::shared_ptr<Beryll::SceneObject>& so : m_animatedOrDynamicObjects)
             {
-                if(so->getIsEnabledUpdate() && so->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMIC_ENV)
+                if(so->getIsEnabledUpdate() && (so->getSceneObjectGroup() == EnumsAndVars::SceneGR_PLAYER_BULLET ||
+                                                so->getSceneObjectGroup() == EnumsAndVars::SceneGR_ENEMY ||
+                                                so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS ||
+                                                so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_WOOD ||
+                                                so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_STONE))
                 {
                     so->activate();
                 }
@@ -425,8 +468,10 @@ namespace AngryBomb3D
             }
         }
 
-        if(m_eyesLookAngleY > 40.0f) m_eyesLookAngleY = 40.0f; // Eye down.
-        if(m_eyesLookAngleY < -16.0f) m_eyesLookAngleY = -16.0f; // Eye up.
+        if(m_eyesLookAngleY > 50.0f) m_eyesLookAngleY = 50.0f; // Eye down.
+        if(m_eyesLookAngleY < -20.0f) m_eyesLookAngleY = -20.0f; // Eye up.
+        //BR_INFO("m_eyesLookAngleXZ %f", m_eyesLookAngleXZ);
+        //BR_INFO("m_eyesLookAngleY %f", m_eyesLookAngleY);
 
         m_playerCurrentDir = m_player->getObj()->getOrigin();
         m_playerCurrentDir.y = 0.0f;
@@ -497,7 +542,7 @@ namespace AngryBomb3D
             m_eyesLookAngleXZ = m_playerRotatedTotalAngle - m_cameraXZAngleThreshold;
 
         m_cameraFront = m_player->getObj()->getOrigin();
-        m_cameraFront.y += 10.0f;
+        m_cameraFront.y += 6.5f;
 
         // Euler angles.
         float m_eyesLookAngleXZRadians = glm::radians(m_eyesLookAngleXZ);
@@ -515,16 +560,16 @@ namespace AngryBomb3D
 
         // Move camera a bit to left side(player's character will not directly on the middle of the screen).
         // That allow player see all trajectory including part going down.
-        Beryll::Camera::setCameraPos(Beryll::Camera::getCameraPos() + Beryll::Camera::getCameraLeftXYZ() * 20.0f);
-        Beryll::Camera::setCameraFrontPos(Beryll::Camera::getCameraFrontPos() + Beryll::Camera::getCameraLeftXYZ() * 12.0f);
+        Beryll::Camera::setCameraPos(Beryll::Camera::getCameraPos() + Beryll::Camera::getCameraLeftXYZ() * 2.2f);
+        Beryll::Camera::setCameraFrontPos(Beryll::Camera::getCameraFrontPos() + Beryll::Camera::getCameraLeftXYZ() * 2.0f);
         // Move camera pos up to get view more from top if player is on high point.
         //Beryll::Camera::setCameraPos(Beryll::Camera::getCameraPos() + glm::vec3(0.0f, m_player->getObj()->getOrigin().y * 0.7f, 0.0f));
 
         // Update shoot dir after camera.
-        const float sliderRatio_0_1 = m_gui->sliderPower->getValue() / m_gui->sliderPower->getMax();
-        const float baseAddedAngle =              80.0f;
-        const float substrAngleWhenPowerGrowing = 77.5f * std::pow(sliderRatio_0_1, 0.185f);
-        const float addAngleAtMaxPower =          5.5f * std::pow(sliderRatio_0_1, 1.85f);
+        const float sliderRange_0_1 = m_gui->sliderPower->getValue() / m_gui->sliderPower->getMax();
+        const float baseAddedAngle =              26.0f;
+        const float substrAngleWhenPowerGrowing = 24.0f * std::pow(sliderRange_0_1, 0.185f);
+        const float addAngleAtMaxPower =          2.0f * std::pow(sliderRange_0_1, 1.85f);
         const float angleBetweenWorldUpAndCameraBack = BeryllUtils::Common::getAngleInRadians(BeryllConstants::worldUp, Beryll::Camera::getCameraBackDirectionXYZ());
         EnumsAndVars::throwAngleRadians = angleBetweenWorldUpAndCameraBack - glm::half_pi<float>();
         EnumsAndVars::throwAngleRadians += glm::radians(baseAddedAngle - substrAngleWhenPowerGrowing + addAngleAtMaxPower);
@@ -534,7 +579,7 @@ namespace AngryBomb3D
         m_bulletImpulseVector = glm::normalize(m_bulletImpulseVector);
         m_bulletImpulseVector *= m_gui->sliderPower->getValue();
 
-        m_bulletStartPosition = m_player->getObj()->getOrigin() + m_player->getObj()->getFaceDirXZ() * 2.0f;
-        m_bulletStartPosition.y += 3.0f;
+        m_bulletStartPosition = m_player->getObj()->getOrigin() + m_player->getObj()->getFaceDirXZ() * 1.5f;
+        m_bulletStartPosition.y += 2.0f;
     }
 }

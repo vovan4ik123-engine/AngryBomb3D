@@ -8,10 +8,11 @@ namespace AngryBomb3D
         loadEnv();
         loadEnemies();
         loadPlayerPoints();
-        loadBulletSet(BulletType::STANDARD_1_KG, 100, 3.0f);
+        loadBulletSet(BulletType::STANDARD_1_KG, 1, 3.0f);
 
         loadShaders();
-        m_eyesLookAngleXZ = -9.0f;
+        m_eyesLookAngleXZ = -1.0f;
+        m_eyesLookAngleY = 5.9f;
         m_dirToSun = glm::normalize(glm::vec3(-0.5f, 1.0f, -0.6f));
         m_sunLightDir = -m_dirToSun;
         m_skyBox = Beryll::Renderer::createSkyBox("skyboxes/whiteClouds");
@@ -29,42 +30,29 @@ namespace AngryBomb3D
 
     void Map0::loadEnv()
     {
-        auto ground = std::make_shared<Beryll::SimpleCollidingObject>("models3D/mapCommon/Ground_800.fbx",
-                                                                                     0.0f,
-                                                                                     false,
-                                                                                     Beryll::CollisionFlags::STATIC,
-                                                                                     EnumsAndVars::CollGr_STATIC_ENV,
-                                                                                     EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
-                                                                                     EnumsAndVars::SceneGR_GROUND);
+        auto ground = std::make_shared<Beryll::SimpleCollidingObject>("models3D/levels/Ground_400.fbx",
+                                                                      0.0f,
+                                                                      false,
+                                                                      Beryll::CollisionFlags::STATIC,
+                                                                      EnumsAndVars::CollGr_STATIC_ENV,
+                                                                      EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
+                                                                      EnumsAndVars::SceneGR_GROUND);
         ground->setFriction(1.0f);
         m_allEnv.push_back(ground);
 
-        auto staticEnv = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map0/Static_0_5friction.fbx",
-                                                                                  0.0f,
-                                                                                  false,
-                                                                                  Beryll::CollisionFlags::STATIC,
-                                                                                  EnumsAndVars::CollGr_STATIC_ENV,
-                                                                                  EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
-                                                                                  EnumsAndVars::SceneGR_STATIC_ENV);
-        for(const auto& env : staticEnv)
-        {
-            env->setFriction(0.5f);
-            m_simpleObjForShadowMap.push_back(env);
-            m_allEnv.push_back(env);
-        }
-
-        auto dynamicEnv1 = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map0/Dynamic_1kg_0_5friction.fbx",
-                                                                                  1.0f,
-                                                                                  false,
-                                                                                  Beryll::CollisionFlags::DYNAMIC,
-                                                                                  EnumsAndVars::CollGr_DYNAMIC_ENV,
-                                                                                  EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
+        auto dynamicEnvWood = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/levels/L1_Construction1Wood.fbx",
+                                                                                        2.0f,
+                                                                                        true,
+                                                                                        Beryll::CollisionFlags::DYNAMIC,
+                                                                                        EnumsAndVars::CollGr_DYNAMIC_ENV,
+                                                                                        EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
                                                                                             EnumsAndVars::CollGr_DYNAMIC_ENV,
-                                                                                  EnumsAndVars::SceneGR_DYNAMIC_ENV);
-        for(const auto& env : dynamicEnv1)
+                                                                                        EnumsAndVars::SceneGR_BRICK_WOOD);
+        for(const auto& env : dynamicEnvWood)
         {
-            env->setFriction(0.5f);
-            env->setGravity(glm::vec3{0.0f, -45.0f, 0.0f});
+            env->setFriction(1.0f);
+            env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            env->setDamping(0.1f, 0.25f);
             m_simpleObjForShadowMap.push_back(env);
             m_animatedOrDynamicObjects.push_back(env);
             m_allEnv.push_back(env);
@@ -73,26 +61,28 @@ namespace AngryBomb3D
 
     void Map0::loadEnemies()
     {
-//        auto enemies = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map0/Enemies.fbx",
-//                                                                                1.0f,
-//                                                                                true,
-//                                                                                Beryll::CollisionFlags::DYNAMIC,
-//                                                                                EnumsAndVars::CollGr_DYNAMIC_ENV,
-//                                                                                EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
-//                                                                                EnumsAndVars::CollGr_DYNAMIC_ENV,
-//                                                                                EnumsAndVars::SceneGR_DYNAMIC_ENV);
-//        for(const auto& enemy : enemies)
-//        {
-//            enemy->setFriction(0.5f);
-//            m_simpleObjForShadowMap.push_back(enemy);
-//            m_animatedOrDynamicObjects.push_back(enemy);
-//            m_allEnemies.emplace_back(enemy);
-//        }
+        auto enemies = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/levels/L1_Enemies.fbx",
+                                                                                0.1f,
+                                                                                true,
+                                                                                Beryll::CollisionFlags::DYNAMIC,
+                                                                                EnumsAndVars::CollGr_DYNAMIC_ENV,
+                                                                                EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
+                                                                                    EnumsAndVars::CollGr_DYNAMIC_ENV,
+                                                                                EnumsAndVars::SceneGR_ENEMY);
+        for(const auto& enemy : enemies)
+        {
+            enemy->setFriction(1.0f);
+            enemy->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            enemy->setDamping(0.1f, 0.25f);
+            m_simpleObjForShadowMap.push_back(enemy);
+            m_animatedOrDynamicObjects.push_back(enemy);
+            m_allEnemies.emplace_back(enemy);
+        }
     }
 
     void Map0::loadPlayerPoints()
     {
-        auto points = Beryll::SimpleObject::loadManyModelsFromOneFile("models3D/map0/PlayerPoints.fbx", EnumsAndVars::SceneGR_GROUND);
+        auto points = Beryll::SimpleObject::loadManyModelsFromOneFile("models3D/levels/L1_PlayerPoints.fbx", EnumsAndVars::SceneGR_NONE);
 
         std::vector<glm::vec3> origins;
         origins.reserve(points.size());

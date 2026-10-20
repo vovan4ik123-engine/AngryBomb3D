@@ -22,9 +22,6 @@ namespace AngryBomb3D
 
     void BaseEnemy::update()
     {
-        if(Beryll::Physics::getAnyCollisionForID(m_obj->getID()) == 0)
-            return;
-
         if(glm::distance(m_startPosition, m_obj->getOrigin()) > 10.0f ||
            Beryll::Physics::getIsCollisionWithGroup(m_obj->getID(), EnumsAndVars::CollGr_PLAYER_BULLET))
         {

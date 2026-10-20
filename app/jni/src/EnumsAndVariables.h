@@ -25,7 +25,7 @@ namespace EnumsAndVars
         // Stored in DB.
         static inline int FPSLimit = 60;
         // Not stored in DB.
-        static constexpr inline float cameraDistance = 47.0f;
+        static constexpr inline float cameraDistance = 20.0f;
         static constexpr inline float cameraHorizontalSpeed = 350.0f * 0.5f;
         static constexpr inline float cameraVerticalSpeed = 125.0f * 0.5f;
     };
@@ -33,11 +33,11 @@ namespace EnumsAndVars
     struct MapsProgress
     {
         // Stored in DB.
-        static inline int currentMapIndex = 0; // Index of selected map on start screen.
-        static inline int lastOpenedMapIndex = 3; // Last index of map available for select and play.
+        static inline int currentMapIndex = 1; // Index of selected map on start screen.
+        static inline int lastOpenedMapIndex = 4; // Last index of map available for select and play.
         // Not stored in DB.
-        static constexpr inline int maxMapIndex = 3; // Last possible map index (opened or not). Must be hardcoded before release.
-        static inline int mapIndexWhenMapStart = 0;
+        static constexpr inline int maxMapIndex = 4; // Last possible map index (opened or not). Must be hardcoded before release.
+        static inline int mapIndexWhenMapStart = 1;
     };
 
     constexpr inline Beryll::CollisionGroups CollGr_DYNAMIC_ENV = Beryll::CollisionGroups::GROUP_1;
@@ -45,16 +45,18 @@ namespace EnumsAndVars
     constexpr inline Beryll::CollisionGroups CollGr_PLAYER = Beryll::CollisionGroups::GROUP_3;
     constexpr inline Beryll::CollisionGroups CollGr_PLAYER_BULLET = Beryll::CollisionGroups::GROUP_4;
 
-    constexpr inline Beryll::SceneObjectGroups SceneGR_DYNAMIC_ENV = Beryll::SceneObjectGroups::GROUP_1;
-    constexpr inline Beryll::SceneObjectGroups SceneGR_STATIC_ENV = Beryll::SceneObjectGroups::GROUP_2;
-    constexpr inline Beryll::SceneObjectGroups SceneGR_GROUND = Beryll::SceneObjectGroups::GROUP_3;
-    constexpr inline Beryll::SceneObjectGroups SceneGR_PLAYER = Beryll::SceneObjectGroups::GROUP_4;
-    constexpr inline Beryll::SceneObjectGroups SceneGR_PLAYER_BULLET = Beryll::SceneObjectGroups::GROUP_5;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_NONE = Beryll::SceneObjectGroups::NONE;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_GROUND = Beryll::SceneObjectGroups::GROUP_1;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_PLAYER = Beryll::SceneObjectGroups::GROUP_2;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_PLAYER_BULLET = Beryll::SceneObjectGroups::GROUP_3;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_ENEMY = Beryll::SceneObjectGroups::GROUP_4;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_BRICK_GLASS = Beryll::SceneObjectGroups::GROUP_5;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_BRICK_WOOD = Beryll::SceneObjectGroups::GROUP_6;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_BRICK_STONE = Beryll::SceneObjectGroups::GROUP_7;
 
     constexpr inline float bulletMass = 1.0f;
-    constexpr inline glm::vec3 bulletGravity{0.0f, -60.0f, 0.0f};
+    constexpr inline glm::vec3 bulletGravity{0.0f, -20.0f, 0.0f};
 
-    constexpr inline float throwPowerDefault = 50.0f;
     inline float throwAngleRadians = 0.0f;
 
     inline bool showPlayerMoveArrows = false;

@@ -58,7 +58,7 @@ namespace AngryBomb3D
             GameStateHelper::popState();
             GameStateHelper::pushPlayState();
         }
-        else if(m_buttonMapSwipeLeft->getIsPressed() && EnumsAndVars::MapsProgress::currentMapIndex > 0)
+        else if(m_buttonMapSwipeLeft->getIsPressed() && EnumsAndVars::MapsProgress::currentMapIndex > 1)
         {
             --EnumsAndVars::MapsProgress::currentMapIndex;
             enableDisableButtons();
@@ -95,7 +95,7 @@ namespace AngryBomb3D
     void StartMenuGUILayer::enableDisableButtons()
     {
         // Map swipe left enable.
-        if(EnumsAndVars::MapsProgress::currentMapIndex > 0)
+        if(EnumsAndVars::MapsProgress::currentMapIndex > 1)
             m_buttonMapSwipeLeft->enable();
         else
             m_buttonMapSwipeLeft->disable();

@@ -35,6 +35,7 @@ namespace AngryBomb3D
         }
         bool getIsAnyBulletHasCollision() const { return m_anyBulletHasCollision; }
         bool getIsAnyBulletActive() const { return m_anyBulletIsActive; }
+        const std::vector<std::shared_ptr<Beryll::SimpleCollidingObject>>& getBullets() { return m_bullets; }
 
         std::shared_ptr<Beryll::ButtonWithTexture> buttonBullet;
         std::shared_ptr<Beryll::GUIText> textBulletsCount;

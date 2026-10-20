@@ -25,7 +25,7 @@ namespace AngryBomb3D
         if(type == BulletType::STANDARD_1_KG)
         {
             buttonBullet = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/bullets/Standard_1kg.png", "",
-                                                                       glm::vec3{0.0f, 0.0f, 0.5f}, glm::vec2{11.0f / screenAR, 11.0f});
+                                                                       glm::vec3{0.0f, 0.0f, 0.5f}, glm::vec2{11.0f / screenAR, 11.0f}, false, false, false);
         }
         else
         {
