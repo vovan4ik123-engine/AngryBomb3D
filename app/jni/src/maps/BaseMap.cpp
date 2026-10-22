@@ -159,6 +159,8 @@ namespace AngryBomb3D
         }
 
         m_skyBox->draw();
+        Beryll::ParticleSystem::draw();
+        Beryll::TextOnScene::draw();
 
 //        m_simpleObjSemiTransparent->bind();
 //        m_simpleObjSemiTransparent->set3Float("sunLightDir", m_sunLightDir);
@@ -370,6 +372,13 @@ namespace AngryBomb3D
                     {
                         if(objEnv->getID() == objCollidingWithID && objEnv->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS)
                         {
+                            Beryll::ParticleSystem::EmitCubesFromCenter(10, 0.45f, 0.5f, 0.5f,
+                                                                        glm::vec4{0.0f, 0.5f, 1.0f, 1.0f}, glm::vec4{0.0f, 0.5f, 1.0f, 1.0f},
+                                                                        bullet->getOrigin(),
+                                                                        glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
+                                                                                  Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
+                                                                                  Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f},
+                                                                        10.0f);
                             objEnv->disableForEver();
                             wakeUpObjects = true;
                         }

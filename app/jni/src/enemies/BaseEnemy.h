@@ -28,5 +28,6 @@ namespace AngryBomb3D
         static int m_allCount;
 
         void die();
+        bool m_isDead = false;
     };
 }

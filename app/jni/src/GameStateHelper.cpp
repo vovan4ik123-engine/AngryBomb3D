@@ -7,6 +7,7 @@ namespace AngryBomb3D
 {
     void GameStateHelper::pushStartMenuState()
     {
+        Beryll::EventHandler::resetFingers();
         std::shared_ptr<StartMenuGUILayer> GUILayer = std::make_shared<StartMenuGUILayer>();
 
         std::shared_ptr<Beryll::GameState> startMenuState = std::make_shared<Beryll::GameState>();
@@ -18,6 +19,7 @@ namespace AngryBomb3D
 
     void GameStateHelper::pushPlayState()
     {
+        Beryll::EventHandler::resetFingers();
         std::shared_ptr<AngryBomb3D::PlayStateGUILayer> GUILayer = std::make_shared<AngryBomb3D::PlayStateGUILayer>();
         std::shared_ptr<AngryBomb3D::PlayStateSceneLayer> sceneLayer = std::make_shared<AngryBomb3D::PlayStateSceneLayer>(GUILayer);
 
@@ -31,6 +33,7 @@ namespace AngryBomb3D
 
     void GameStateHelper::popState()
     {
+        Beryll::EventHandler::resetFingers();
         Beryll::ParticleSystem::disableAll(); // Before state exited.
 
         Beryll::GameStateMachine::popState();

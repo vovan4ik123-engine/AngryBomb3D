@@ -17,6 +17,7 @@ namespace AngryBomb3D
         EnumsAndVars::reset();
         BaseEnemy::resetCounts();
         SendStatisticsHelper::reset();
+        Beryll::TextOnScene::clear();
 
         SendStatisticsHelper::sendMapStart();
 
