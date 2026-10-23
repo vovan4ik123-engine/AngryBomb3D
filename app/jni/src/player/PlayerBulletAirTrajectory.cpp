@@ -51,7 +51,7 @@ namespace AngryBomb3D
 
         //BR_INFO("throwPower %f", throwPower);
         // Calculate some points on fly trajectory.
-        for(int i = 0; i <= (40 - int(std::roundf(throwPower * 2.0f))); ++i)
+        for(int i = 0; i <= (45 - int(std::roundf(throwPower * 2.0f))); ++i)
         {
             // Point every float(i * i)... meters on trajectory !!! Not on ground !!!
             if(i == 0)

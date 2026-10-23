@@ -58,7 +58,7 @@ namespace AngryBomb3D
                     so->getSceneObjectGroup() == EnumsAndVars::SceneGR_ENEMY ||
                     so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS ||
                     so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_WOOD ||
-                    so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_STONE) && so->getOrigin().y < -5.0f)
+                    so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_STONE) && so->getOrigin().y < -50.0f)
                 {
                     so->disableForEver();
                     BR_INFO("%s", "so->disableForEver();");
