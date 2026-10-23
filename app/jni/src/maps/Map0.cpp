@@ -13,7 +13,7 @@ namespace AngryBomb3D
         loadShaders();
         m_eyesLookAngleXZ = -1.0f;
         m_eyesLookAngleY = 5.9f;
-        m_dirToSun = glm::normalize(glm::vec3(-0.5f, 1.0f, -0.6f));
+        m_dirToSun = glm::normalize(glm::vec3(0.6f, 1.0f, -0.6f));
         m_sunLightDir = -m_dirToSun;
         m_skyBox = Beryll::Renderer::createSkyBox("skyboxes/whiteClouds");
 

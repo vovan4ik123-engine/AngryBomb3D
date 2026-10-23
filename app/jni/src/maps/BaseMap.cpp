@@ -147,7 +147,7 @@ namespace AngryBomb3D
             }
         }
 
-        if(m_gui->sliderPower->getValue() > m_gui->sliderPower->getMin() + 5.0f)
+        if(m_gui->sliderPower->getValue() > m_gui->sliderPower->getMin() + 35.0f)
         {
             m_bulletTrajectory.calculateAndDraw(EnumsAndVars::bulletMass,
                                                 EnumsAndVars::bulletGravity,
@@ -300,7 +300,6 @@ namespace AngryBomb3D
 
         if(m_gui->buttonShot->getIsPressed() && !EnumsAndVars::notEmptyBulletsSets.empty())
         {
-            //m_gui->sliderPower->setValue(0.0f);
             EnumsAndVars::notEmptyBulletsSets[EnumsAndVars::currentBulletSetIndex]->shoot(m_bulletStartPosition, m_bulletImpulseVector);
         }
     }

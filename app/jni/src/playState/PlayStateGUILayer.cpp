@@ -26,8 +26,8 @@ namespace AngryBomb3D
                                                                    glm::vec3{0.0f, 86.0f, 0.5f}, glm::vec2{14.0f / screenAR, 14.0f});
         m_guiObjects.push_back(buttonCancel);
 
-        sliderPower = std::make_shared<Beryll::SliderVertical>("GUI/SliderVerticalTrack.png", "GUI/SliderVerticalThumb.png",
-                                                               glm::vec3{3.0f, 10.0f, 0.5f}, glm::vec2{6.0f, 50.0f}, 30.0f, 250.0f);
+        sliderPower = std::make_shared<Beryll::SliderVertical>("GUI/slvtrack.png", "GUI/slvthumb.png",
+                                                               glm::vec3{1.0f, 5.0f, 0.5f}, glm::vec2{11.0f, 60.0f}, 0.0f, 240.0f);
         m_guiObjects.push_back(sliderPower);
 
         buttonShot = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/ShotButton.png", "",
@@ -65,6 +65,9 @@ namespace AngryBomb3D
                 go->updateBeforePhysics();
             }
         }
+
+        if(sliderPower->getValue() < 30.0f)
+            sliderPower->setValue(30.0f);
 
         if(m_statisticsShow && Beryll::TimeStep::getMilliSecFromStart() > m_statisticsUpdateTime + 200) // Update every 200 ms.
         {
@@ -173,8 +176,8 @@ namespace AngryBomb3D
                 EnumsAndVars::notEmptyBulletsSets[i]->buttonBullet->draw();
 
                 newPos = EnumsAndVars::notEmptyBulletsSets[i]->textBulletsCount->getPositionInPercents();
-                newPos.x = currentElementLeftPos + width * 0.3f;
-                newPos.y = bottomPos + height + 2.0f;
+                newPos.x = currentElementLeftPos + width * 0.35f;
+                newPos.y = bottomPos + height + 0.5f;
                 if(EnumsAndVars::currentBulletSetIndex == i)
                     newPos.y += 2.0f;
                 if(newPos != EnumsAndVars::notEmptyBulletsSets[i]->textBulletsCount->getPositionInPercents())
