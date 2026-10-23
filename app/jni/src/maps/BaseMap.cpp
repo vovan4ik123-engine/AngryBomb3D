@@ -6,9 +6,10 @@ namespace AngryBomb3D
 {
     BaseMap::BaseMap(std::shared_ptr<PlayStateGUILayer> gui) : m_gui(std::move(gui))
     {
-        m_animatedOrDynamicObjects.reserve(1500);
-        m_allEnv.reserve(1000);
-        m_simpleObjForShadowMap.reserve(1000);
+        m_animatedOrDynamicObjects.reserve(800);
+        m_allEnv.reserve(800);
+        m_simpleObjForShadowMap.reserve(800);
+        m_allEnemies.reserve(20);
 
         //BR_INFO(" X:%f Y:%f Z:%f", .x, .y, .z);
         //BR_INFO("%s", "");

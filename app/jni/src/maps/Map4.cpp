@@ -1,0 +1,94 @@
+#include "Map4.h"
+
+namespace AngryBomb3D
+{
+    Map4::Map4(std::shared_ptr<PlayStateGUILayer> gui) : BaseMap(std::move(gui))
+    {
+        loadPlayer();
+        loadEnv();
+        loadEnemies();
+        loadPlayerPoints();
+        loadBulletSet(BulletType::STANDARD_1_KG, 46, 3.0f);
+
+        loadShaders();
+        m_eyesLookAngleXZ = -9.0f;
+        m_dirToSun = glm::normalize(glm::vec3(-0.5f, 1.0f, -0.6f));
+        m_sunLightDir = -m_dirToSun;
+        m_skyBox = Beryll::Renderer::createSkyBox("skyboxes/whiteClouds");
+
+        //BR_INFO(" X:%f Y:%f Z:%f", .x, .y, .z);
+        //BR_INFO("%s", "");
+        //BR_INFO(" %f", );
+        //BR_INFO(" %d", );
+    }
+
+    Map4::~Map4()
+    {
+
+    }
+
+    void Map4::loadEnv()
+    {
+        auto ground = std::make_shared<Beryll::SimpleCollidingObject>("models3D/mapCommon/Ground_300.fbx",
+                                                                                     0.0f,
+                                                                                     false,
+                                                                                     Beryll::CollisionFlags::STATIC,
+                                                                                     EnumsAndVars::CollGr_STATIC_ENV,
+                                                                                     EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
+                                                                                     EnumsAndVars::SceneGR_GROUND);
+        ground->setFriction(2.0f);
+        m_allEnv.push_back(ground);
+
+        auto dynamicEnv1 = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map3/Dynamic_1kg.fbx",
+                                                                                    1.0f,
+                                                                                    false,
+                                                                                    Beryll::CollisionFlags::DYNAMIC,
+                                                                                    EnumsAndVars::CollGr_DYNAMIC_ENV,
+                                                                                    EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
+                                                                                            EnumsAndVars::CollGr_DYNAMIC_ENV,
+                                                                                    EnumsAndVars::SceneGR_BRICK_WOOD);
+        for(const auto& env : dynamicEnv1)
+        {
+            env->setFriction(2.0f);
+            env->setGravity(glm::vec3{0.0f, -45.0f, 0.0f});
+            m_simpleObjForShadowMap.push_back(env);
+            m_animatedOrDynamicObjects.push_back(env);
+            m_allEnv.push_back(env);
+        }
+    }
+
+    void Map4::loadEnemies()
+    {
+//        auto enemies = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map3/Enemies.fbx",
+//                                                                                1.0f,
+//                                                                                true,
+//                                                                                Beryll::CollisionFlags::DYNAMIC,
+//                                                                                EnumsAndVars::CollGr_DYNAMIC_ENV,
+//                                                                                EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
+//                                                                                EnumsAndVars::CollGr_DYNAMIC_ENV,
+//                                                                                EnumsAndVars::SceneGR_ENEMY);
+//        for(const auto& enemy : enemies)
+//        {
+//            enemy->setFriction(0.5f);
+//            m_simpleObjForShadowMap.push_back(enemy);
+//            m_animatedOrDynamicObjects.push_back(enemy);
+//            m_allEnemies.emplace_back(enemy);
+//        }
+    }
+
+    void Map4::loadPlayerPoints()
+    {
+        auto points = Beryll::SimpleObject::loadManyModelsFromOneFile("models3D/map3/PlayerPoints.fbx", EnumsAndVars::SceneGR_NONE);
+
+        std::vector<glm::vec3> origins;
+        origins.reserve(points.size());
+        for(const auto& point : points)
+        {
+            origins.push_back(point->getOrigin());
+            m_simpleObjForShadowMap.push_back(point);
+            m_allEnv.push_back(point);
+        }
+
+        m_player->setPlayerPoints(std::move(origins));
+    }
+}
