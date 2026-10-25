@@ -26,7 +26,7 @@ namespace AngryBomb3D
 
         void handleControls();
         void handleBulletsSets();
-        void handleCollisions();
+        virtual void handleCollisions();
         void handleWinLose();
         void handleCamera();
 

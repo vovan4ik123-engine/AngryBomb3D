@@ -363,7 +363,7 @@ namespace AngryBomb3D
 
         for(const auto& bullet : activeBullets)
         {
-            std::vector<int> bulletCollisions = Beryll::Physics::getAllCollisionsForID(bullet->getID());
+            const std::vector<int> bulletCollisions = Beryll::Physics::getAllCollisionsForID(bullet->getID());
             if(!bulletCollisions.empty())
             {
                 for(int objCollidingWithID : bulletCollisions)
@@ -393,8 +393,7 @@ namespace AngryBomb3D
 
             for(const std::shared_ptr<Beryll::SceneObject>& so : m_animatedOrDynamicObjects)
             {
-                if(so->getIsEnabledUpdate() && (so->getSceneObjectGroup() == EnumsAndVars::SceneGR_PLAYER_BULLET ||
-                                                so->getSceneObjectGroup() == EnumsAndVars::SceneGR_ENEMY ||
+                if(so->getIsEnabledUpdate() && (so->getSceneObjectGroup() == EnumsAndVars::SceneGR_ENEMY ||
                                                 so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS ||
                                                 so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_WOOD ||
                                                 so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_STONE))
