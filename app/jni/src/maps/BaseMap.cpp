@@ -496,7 +496,7 @@ namespace AngryBomb3D
             {
                 const float currentToPrevAngle = BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_playerPrevDir);
 
-                if(BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_worldDefaultDir) > 90.0f)
+                if(BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_worldDefaultDir) > m_cameraXZAngleThreshold * 2.01f)
                     m_playerRotatedTotalAngle += currentToPrevAngle;
                 else
                     m_playerRotatedTotalAngle += -currentToPrevAngle;
@@ -506,7 +506,7 @@ namespace AngryBomb3D
             {
                 const float currentToPrevAngle = BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_playerPrevDir);
 
-                if(BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_worldDefaultDir) > 90.0f)
+                if(BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_worldDefaultDir) > m_cameraXZAngleThreshold * 2.01f)
                     m_playerRotatedTotalAngle += -currentToPrevAngle;
                 else
                     m_playerRotatedTotalAngle += currentToPrevAngle;

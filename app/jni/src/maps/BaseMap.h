@@ -66,7 +66,7 @@ namespace AngryBomb3D
         float m_eyesLookAngleY = 0.0f; // Degrees.
         glm::vec3 m_cameraOffset{0.0f};
         glm::vec3 m_cameraFront{0.0f};
-        const float m_cameraXZAngleThreshold = 45.0f;
+        const float m_cameraXZAngleThreshold = 60.0f;
 
         const glm::vec3 m_worldDefaultDir{1.0f, 0.0f, 0.0f};
         glm::vec3 m_playerCurrentDir{0.0f};

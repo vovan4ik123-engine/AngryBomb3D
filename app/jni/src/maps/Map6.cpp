@@ -153,7 +153,7 @@ namespace AngryBomb3D
             {
                 for(const std::shared_ptr<Beryll::SceneObject>& so : m_animatedOrDynamicObjects)
                 {
-                    if(so->getID() == objCollidingWithID && so->getOrigin().y < 10.0f && ((so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS ||
+                    if(so->getID() == objCollidingWithID && so->getOrigin().y < 5.0f && ((so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS ||
                                                                                            so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_WOOD ||
                                                                                            so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_STONE)))
                     {
