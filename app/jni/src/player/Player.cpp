@@ -22,7 +22,7 @@ namespace AngryBomb3D
     {
         if(m_state == PlayerState::MOVE)
         {
-            const glm::vec3 move = glm::normalize(m_nextPoint - m_currentPoint) * 300.0f * Beryll::TimeStep::getTimeStepSec();
+            const glm::vec3 move = glm::normalize(m_nextPoint - m_currentPoint) * 150.0f * Beryll::TimeStep::getTimeStepSec();
             if(glm::distance(m_obj->getOrigin(), m_nextPoint) < glm::length(move))
             {
                 m_obj->setOrigin(m_nextPoint);

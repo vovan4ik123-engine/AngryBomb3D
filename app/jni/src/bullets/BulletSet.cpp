@@ -32,7 +32,7 @@ namespace AngryBomb3D
             BR_ASSERT(false, "%s", "Unknown bullet type.");
         }
 
-        textBulletsCount = Beryll::Renderer::createGUIText("", glm::vec3{0.06f, 0.06f, 0.06f}, glm::vec3{0.0f, 0.0f, 0.5f}, 6.0f);
+        textBulletsCount = Beryll::Renderer::createGUIText("", glm::vec3{0.06f, 0.06f, 0.06f}, glm::vec3{0.0f, 0.0f, 0.6f}, 6.0f);
     }
 
     BulletSet::~BulletSet()

@@ -8,6 +8,7 @@
 #include "maps/Map4.h"
 #include "maps/Map5.h"
 #include "maps/Map6.h"
+#include "maps/Map7.h"
 
 namespace AngryBomb3D
 {
@@ -35,6 +36,8 @@ namespace AngryBomb3D
             m_map = std::make_shared<Map5>(gui);
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 6)
             m_map = std::make_shared<Map6>(gui);
+        else if(EnumsAndVars::MapsProgress::currentMapIndex == 7)
+            m_map = std::make_shared<Map7>(gui);
         else
         {
             BR_ASSERT(false, "Map index does not handled: %d", EnumsAndVars::MapsProgress::currentMapIndex);

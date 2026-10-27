@@ -301,6 +301,7 @@ namespace AngryBomb3D
 
         if(m_gui->buttonShot->getIsPressed() && !EnumsAndVars::notEmptyBulletsSets.empty())
         {
+            m_gui->sliderPower->setValue(30.0f);
             EnumsAndVars::notEmptyBulletsSets[EnumsAndVars::currentBulletSetIndex]->shoot(m_bulletStartPosition, m_bulletImpulseVector);
         }
     }
@@ -372,7 +373,8 @@ namespace AngryBomb3D
                     {
                         if(objEnv->getID() == objCollidingWithID && objEnv->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS)
                         {
-                            Beryll::ParticleSystem::EmitCubesFromCenter(10, 0.45f, 0.5f, 0.5f,
+                            const float partSize = (objEnv->getXZRadius() + objEnv->getObjectHeight()) * 0.18f;
+                            Beryll::ParticleSystem::EmitCubesFromCenter(10, 0.45f, partSize, partSize * 0.6f,
                                                                         glm::vec4{0.0f, 0.5f, 1.0f, 1.0f}, glm::vec4{0.0f, 0.5f, 1.0f, 1.0f},
                                                                         bullet->getOrigin(),
                                                                         glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,

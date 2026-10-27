@@ -49,7 +49,7 @@ namespace AngryBomb3D
                                                                                        EnumsAndVars::SceneGR_BRICK_GLASS);
         for(const auto& env : staticEnvGlass)
         {
-            env->setFriction(1.0f);
+            env->setFriction(0.05f);
             m_simpleObjForShadowMap.push_back(env);
             m_allEnv.push_back(env);
         }

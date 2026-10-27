@@ -50,7 +50,7 @@ namespace AngryBomb3D
                                                                                         EnumsAndVars::SceneGR_BRICK_GLASS);
         for(const auto& env : dynamicEnvGlass)
         {
-            env->setFriction(1.0f);
+            env->setFriction(0.05f);
             env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
             env->setDamping(0.1f, 0.2f);
             m_simpleObjForShadowMap.push_back(env);

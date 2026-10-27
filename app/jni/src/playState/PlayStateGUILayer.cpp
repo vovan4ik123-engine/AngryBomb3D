@@ -35,12 +35,12 @@ namespace AngryBomb3D
         m_guiObjects.push_back(buttonShot);
 
         buttonMoveLeft = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/LeftArrow.png", "",
-                                                                     glm::vec3{30.0f, 5.0f, 0.5f}, glm::vec2{10.0f, 15.0f});
+                                                                     glm::vec3{30.0f, 5.0f, 0.5f}, glm::vec2{10.0f, 15.0f}, false, false, false);
         m_guiObjects.push_back(buttonMoveLeft);
         buttonMoveLeft->disable();
 
         buttonMoveRight = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/RightArrow.png", "",
-                                                                      glm::vec3{60.0f, 5.0f, 0.5f}, glm::vec2{10.0f, 15.0f});
+                                                                      glm::vec3{60.0f, 5.0f, 0.5f}, glm::vec2{10.0f, 15.0f}, false, false, false);
         m_guiObjects.push_back(buttonMoveRight);
         buttonMoveRight->disable();
 
@@ -177,7 +177,7 @@ namespace AngryBomb3D
 
                 newPos = EnumsAndVars::notEmptyBulletsSets[i]->textBulletsCount->getPositionInPercents();
                 newPos.x = currentElementLeftPos + width * 0.35f;
-                newPos.y = bottomPos + height + 0.5f;
+                newPos.y = bottomPos + 3.3f;
                 if(EnumsAndVars::currentBulletSetIndex == i)
                     newPos.y += 2.0f;
                 if(newPos != EnumsAndVars::notEmptyBulletsSets[i]->textBulletsCount->getPositionInPercents())
