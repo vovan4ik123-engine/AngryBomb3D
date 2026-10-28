@@ -148,9 +148,9 @@ namespace AngryBomb3D
             }
         }
 
-        if(m_gui->sliderPower->getValue() > m_gui->sliderPower->getMin() + 35.0f)
+        if(m_gui->sliderPower->getValue() > m_gui->sliderPower->getMin() + 0.14f && !EnumsAndVars::notEmptyBulletsSets.empty())
         {
-            m_bulletTrajectory.calculateAndDraw(EnumsAndVars::bulletMass,
+            m_bulletTrajectory.calculateAndDraw(EnumsAndVars::notEmptyBulletsSets[EnumsAndVars::currentBulletSetIndex]->getMass(),
                                                 EnumsAndVars::bulletGravity,
                                                 m_bulletStartPosition,
                                                 EnumsAndVars::throwAngleRadians,
@@ -301,7 +301,7 @@ namespace AngryBomb3D
 
         if(m_gui->buttonShot->getIsPressed() && !EnumsAndVars::notEmptyBulletsSets.empty())
         {
-            m_gui->sliderPower->setValue(30.0f);
+            m_gui->sliderPower->setValue(0.12f);
             EnumsAndVars::notEmptyBulletsSets[EnumsAndVars::currentBulletSetIndex]->shoot(m_bulletStartPosition, m_bulletImpulseVector);
         }
     }
@@ -314,22 +314,22 @@ namespace AngryBomb3D
         for(auto& emptyBulletSet : EnumsAndVars::emptyBulletsSetsWithActiveBullets)
             emptyBulletSet->update();
 
-        const auto emptyBulletSetIter = std::find_if(EnumsAndVars::notEmptyBulletsSets.begin(), EnumsAndVars::notEmptyBulletsSets.end(),
+        const auto findEmptySet = std::find_if(EnumsAndVars::notEmptyBulletsSets.begin(), EnumsAndVars::notEmptyBulletsSets.end(),
                                                      [](const std::shared_ptr<AngryBomb3D::BulletSet>& set){ return set->getAvailableCount() <= 0; });
-        if (emptyBulletSetIter != EnumsAndVars::notEmptyBulletsSets.end())
+        if (findEmptySet != EnumsAndVars::notEmptyBulletsSets.end())
         {
             BR_INFO("%s", "Not empty bullets sets.erase()");
-            EnumsAndVars::emptyBulletsSetsWithActiveBullets.push_back(*emptyBulletSetIter);
-            EnumsAndVars::notEmptyBulletsSets.erase(emptyBulletSetIter);
+            EnumsAndVars::emptyBulletsSetsWithActiveBullets.push_back(*findEmptySet);
+            EnumsAndVars::notEmptyBulletsSets.erase(findEmptySet);
             EnumsAndVars::currentBulletSetIndex = 0;
         }
 
-        const auto emptyNotActiveBulletSetIter = std::find_if(EnumsAndVars::emptyBulletsSetsWithActiveBullets.begin(), EnumsAndVars::emptyBulletsSetsWithActiveBullets.end(),
+        const auto findEmptySetNotActiveBullets = std::find_if(EnumsAndVars::emptyBulletsSetsWithActiveBullets.begin(), EnumsAndVars::emptyBulletsSetsWithActiveBullets.end(),
                                                               [](const std::shared_ptr<AngryBomb3D::BulletSet>& set){ return !set->getIsAnyBulletActive(); });
-        if (emptyNotActiveBulletSetIter != EnumsAndVars::emptyBulletsSetsWithActiveBullets.end())
+        if (findEmptySetNotActiveBullets != EnumsAndVars::emptyBulletsSetsWithActiveBullets.end())
         {
             BR_INFO("%s", "Empty bullets sets.erase()");
-            EnumsAndVars::emptyBulletsSetsWithActiveBullets.erase(emptyNotActiveBulletSetIter);
+            EnumsAndVars::emptyBulletsSetsWithActiveBullets.erase(findEmptySetNotActiveBullets);
         }
     }
 
@@ -422,11 +422,6 @@ namespace AngryBomb3D
                 DataBaseHelper::storeMapsProgressLastOpenedMapIndex(EnumsAndVars::MapsProgress::lastOpenedMapIndex);
             }
         }
-        else if(EnumsAndVars::notEmptyBulletsSets.empty() && !getIsDynamicObjectsMoves())
-        {
-            BR_INFO("%s", "Player lose.");
-            EnumsAndVars::mapPlayerLose = true;
-        }
     }
 
     bool BaseMap::getIsDynamicObjectsMoves()
@@ -498,7 +493,7 @@ namespace AngryBomb3D
             {
                 const float currentToPrevAngle = BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_playerPrevDir);
 
-                if(BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_worldDefaultDir) > m_cameraXZAngleThreshold * 2.01f)
+                if(BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_worldDefaultDir) > m_cameraXZAngleThreshold * 2.0f)
                     m_playerRotatedTotalAngle += currentToPrevAngle;
                 else
                     m_playerRotatedTotalAngle += -currentToPrevAngle;
@@ -508,7 +503,7 @@ namespace AngryBomb3D
             {
                 const float currentToPrevAngle = BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_playerPrevDir);
 
-                if(BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_worldDefaultDir) > m_cameraXZAngleThreshold * 2.01f)
+                if(BeryllUtils::Common::getAngleInDegrees(m_playerCurrentDir, m_worldDefaultDir) > m_cameraXZAngleThreshold * 2.0f)
                     m_playerRotatedTotalAngle += -currentToPrevAngle;
                 else
                     m_playerRotatedTotalAngle += currentToPrevAngle;
@@ -576,7 +571,7 @@ namespace AngryBomb3D
         //Beryll::Camera::setCameraPos(Beryll::Camera::getCameraPos() + glm::vec3(0.0f, m_player->getObj()->getOrigin().y * 0.7f, 0.0f));
 
         // Update shoot dir after camera.
-        const float sliderRange_0_1 = m_gui->sliderPower->getValue() / m_gui->sliderPower->getMax();
+        const float sliderRange_0_1 = m_gui->sliderPower->getValue();
         const float baseAddedAngle =              26.0f;
         const float substrAngleWhenPowerGrowing = 24.0f * std::pow(sliderRange_0_1, 0.185f);
         const float addAngleAtMaxPower =          2.0f * std::pow(sliderRange_0_1, 1.85f);
@@ -587,7 +582,10 @@ namespace AngryBomb3D
         m_bulletImpulseVector = m_player->getObj()->getFaceDirXZ();
         m_bulletImpulseVector.y = glm::tan(EnumsAndVars::throwAngleRadians);
         m_bulletImpulseVector = glm::normalize(m_bulletImpulseVector);
-        m_bulletImpulseVector *= m_gui->sliderPower->getValue();
+        m_bulletImpulseVector *= sliderRange_0_1 *
+                                 m_bulletMaxThrowPower *
+                                 EnumsAndVars::notEmptyBulletsSets[EnumsAndVars::currentBulletSetIndex]->getMass();
+
 
         m_bulletStartPosition = m_player->getObj()->getOrigin() + m_player->getObj()->getFaceDirXZ() * 1.5f;
         m_bulletStartPosition.y += 2.0f;

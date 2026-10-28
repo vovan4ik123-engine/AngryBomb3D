@@ -54,7 +54,6 @@ namespace EnumsAndVars
     constexpr inline Beryll::SceneObjectGroups SceneGR_BRICK_WOOD = Beryll::SceneObjectGroups::GROUP_6;
     constexpr inline Beryll::SceneObjectGroups SceneGR_BRICK_STONE = Beryll::SceneObjectGroups::GROUP_7;
 
-    constexpr inline float bulletMass = 1.0f;
     constexpr inline glm::vec3 bulletGravity{0.0f, -20.0f, 0.0f};
 
     inline float throwAngleRadians = 0.0f;

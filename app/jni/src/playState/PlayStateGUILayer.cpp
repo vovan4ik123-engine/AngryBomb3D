@@ -27,7 +27,7 @@ namespace AngryBomb3D
         m_guiObjects.push_back(buttonCancel);
 
         sliderPower = std::make_shared<Beryll::SliderVertical>("GUI/slvtrack.png", "GUI/slvthumb.png",
-                                                               glm::vec3{1.0f, 5.0f, 0.5f}, glm::vec2{11.0f, 60.0f}, 0.0f, 240.0f);
+                                                               glm::vec3{1.0f, 5.0f, 0.5f}, glm::vec2{11.0f, 60.0f}, 0.0f, 1.0f);
         m_guiObjects.push_back(sliderPower);
 
         buttonShot = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/ShotButton.png", "",
@@ -66,8 +66,8 @@ namespace AngryBomb3D
             }
         }
 
-        if(sliderPower->getValue() < 30.0f)
-            sliderPower->setValue(30.0f);
+        if(sliderPower->getValue() < 0.12f)
+            sliderPower->setValue(0.12f);
 
         if(m_statisticsShow && Beryll::TimeStep::getMilliSecFromStart() > m_statisticsUpdateTime + 200) // Update every 200 ms.
         {

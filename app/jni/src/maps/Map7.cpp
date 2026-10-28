@@ -8,7 +8,8 @@ namespace AngryBomb3D
         loadEnv();
         loadEnemies();
         loadPlayerPoints();
-        loadBulletSet(BulletType::STANDARD_1_KG, 1, 3.0f);
+        loadBulletSet(BulletType::STANDARD_1_KG, 11, 3.0f);
+        m_bulletMaxThrowPower = 100.0f;
 
         loadShaders();
         m_eyesLookAngleXZ = -9.4952f;

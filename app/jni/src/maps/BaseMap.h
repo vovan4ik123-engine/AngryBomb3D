@@ -77,5 +77,6 @@ namespace AngryBomb3D
         PlayerBulletAirTrajectory m_bulletTrajectory;
         glm::vec3 m_bulletImpulseVector{0.0f};
         glm::vec3 m_bulletStartPosition{0.0f};
+        float m_bulletMaxThrowPower = 100.0f;
     };
 }

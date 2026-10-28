@@ -13,6 +13,7 @@ namespace AngryBomb3D
         m_bullets = std::move(bullets);
         m_bulletsCollisionInfo.resize(m_bullets.size());
         m_disableTimeAfterCollision = disableTimeAfterCollision;
+        m_bulletMass = m_bullets[0]->getCollisionMass();
 
         for(const auto& bullet : m_bullets)
         {
