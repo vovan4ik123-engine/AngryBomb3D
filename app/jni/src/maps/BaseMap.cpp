@@ -474,7 +474,7 @@ namespace AngryBomb3D
         }
 
         if(m_eyesLookAngleY > 50.0f) m_eyesLookAngleY = 50.0f; // Eye down.
-        if(m_eyesLookAngleY < -20.0f) m_eyesLookAngleY = -20.0f; // Eye up.
+        if(m_eyesLookAngleY < -25.0f) m_eyesLookAngleY = -25.0f; // Eye up.
         //BR_INFO("m_eyesLookAngleXZ %f", m_eyesLookAngleXZ);
         //BR_INFO("m_eyesLookAngleY %f", m_eyesLookAngleY);
 

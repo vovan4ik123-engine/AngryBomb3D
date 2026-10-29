@@ -8,12 +8,12 @@ namespace AngryBomb3D
         loadEnv();
         loadEnemies();
         loadPlayerPoints();
-        loadBulletSet(BulletType::STANDARD_1_KG, 11, 3.0f);
+        loadBulletSet(BulletType::STANDARD_1_KG, 1, 3.0f);
         m_bulletMaxThrowPower = 100.0f;
 
         loadShaders();
-        m_eyesLookAngleXZ = -9.4952f;
-        m_eyesLookAngleY = 0.4635f;
+        m_eyesLookAngleXZ = -7.055f;
+        m_eyesLookAngleY = -8.737f;
         m_dirToSun = glm::normalize(glm::vec3(0.6f, 1.0f, -0.6f));
         m_sunLightDir = -m_dirToSun;
         m_skyBox = Beryll::Renderer::createSkyBox("skyboxes/whiteClouds");
