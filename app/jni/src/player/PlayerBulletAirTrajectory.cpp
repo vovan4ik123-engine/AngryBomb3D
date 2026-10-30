@@ -93,7 +93,7 @@ namespace AngryBomb3D
                     m_trajectoryHasHit = true;
                     m_trajectoryHitPoint->setOrigin(hit.hitPoint);
 
-                    float scaleFactor = 1.0f + glm::distance(startPosition, hit.hitPoint) / 400.0f; // Scale to + 100% size every 400m.
+                    float scaleFactor = 1.0f + glm::distance(startPosition, hit.hitPoint) / 300.0f; // Scale to + 100% size every 300m.
                     m_modelMatrix = m_trajectoryHitPoint->getModelMatrix() * glm::scale(glm::mat4{1.0f}, glm::vec3{scaleFactor});
                     m_shader->setMatrix4x4Float("modelMatrix", m_modelMatrix);
                     m_shader->setMatrix3x3Float("normalMatrix", glm::mat3(m_modelMatrix));

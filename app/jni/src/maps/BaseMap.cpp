@@ -148,6 +148,21 @@ namespace AngryBomb3D
             }
         }
 
+        m_simpleObjSunLightShadowsNormals->bind();
+        m_simpleObjSunLightShadowsNormals->set3Float("sunLightDir", m_sunLightDir);
+        m_simpleObjSunLightShadowsNormals->set3Float("cameraPos", camPos);
+        m_simpleObjSunLightShadowsNormals->set1Float("ambientLight", m_ambientLight);
+        m_simpleObjSunLightShadowsNormals->set1Float("specularLightStrength", 0.6f);
+
+        for(const auto& normalMapObj : m_simpleObjWithNormalMap)
+        {
+            modelMatrix = normalMapObj->getModelMatrix();
+            m_simpleObjSunLightShadowsNormals->setMatrix4x4Float("MVPLightMatrix", m_sunLightVPMatrix * modelMatrix);
+            m_simpleObjSunLightShadowsNormals->setMatrix4x4Float("modelMatrix", modelMatrix);
+            m_simpleObjSunLightShadowsNormals->setMatrix3x3Float("normalMatrix", glm::mat3(modelMatrix));
+            Beryll::Renderer::drawObject(normalMapObj, modelMatrix, m_simpleObjSunLightShadowsNormals);
+        }
+
         if(m_gui->sliderPower->getValue() > m_gui->sliderPower->getMin() + 0.14f && !EnumsAndVars::notEmptyBulletsSets.empty())
         {
             m_bulletTrajectory.calculateAndDraw(EnumsAndVars::notEmptyBulletsSets[EnumsAndVars::currentBulletSetIndex]->getMass(),
@@ -207,12 +222,14 @@ namespace AngryBomb3D
         m_simpleObjSunLightShadows->bind();
         m_simpleObjSunLightShadows->activateDiffuseTextureMat1();
         m_simpleObjSunLightShadows->activateShadowMapTexture();
+        m_simpleObjSunLightShadows->unBind();
 
         m_simpleObjSemiTransparent = Beryll::Renderer::createShader("shaders/GLES/gameSpecific/SimpleObjectSemiTransparent.vert",
                                                                     "shaders/GLES/gameSpecific/SimpleObjectSemiTransparent.frag");
         m_simpleObjSemiTransparent->bind();
         m_simpleObjSemiTransparent->activateDiffuseTextureMat1();
         m_simpleObjSemiTransparent->activateShadowMapTexture();
+        m_simpleObjSemiTransparent->unBind();
 
         m_simpleObjSunLightShadowsNormals = Beryll::Renderer::createShader("shaders/GLES/SimpleObjectSunLightShadowsNormals.vert",
                                                                            "shaders/GLES/SimpleObjectSunLightShadowsNormals.frag");
@@ -220,12 +237,14 @@ namespace AngryBomb3D
         m_simpleObjSunLightShadowsNormals->activateDiffuseTextureMat1();
         m_simpleObjSunLightShadowsNormals->activateNormalMapTextureMat1();
         m_simpleObjSunLightShadowsNormals->activateShadowMapTexture();
+        m_simpleObjSunLightShadowsNormals->unBind();
 
         m_animatedObjSunLightShadows = Beryll::Renderer::createShader("shaders/GLES/AnimatedObjectSunLightShadows.vert",
                                                                       "shaders/GLES/AnimatedObjectSunLightShadows.frag");
         m_animatedObjSunLightShadows->bind();
         m_animatedObjSunLightShadows->activateDiffuseTextureMat1();
         m_animatedObjSunLightShadows->activateShadowMapTexture();
+        m_animatedObjSunLightShadows->unBind();
 
         m_shadowMap = Beryll::Renderer::createShadowMap(4000, 4000);
     }

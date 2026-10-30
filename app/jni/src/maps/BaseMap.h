@@ -41,6 +41,7 @@ namespace AngryBomb3D
 
         std::vector<std::shared_ptr<Beryll::SceneObject>> m_animatedOrDynamicObjects;
         std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_allEnv;
+        std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_simpleObjWithNormalMap;
         std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_allBullets;
         std::vector<BaseEnemy> m_allEnemies;
         std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_simpleObjForShadowMap;

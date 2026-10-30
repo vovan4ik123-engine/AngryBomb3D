@@ -39,7 +39,7 @@ namespace AngryBomb3D
                                                                       EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
                                                                       EnumsAndVars::SceneGR_GROUND);
         ground->setFriction(1.0f);
-        m_allEnv.push_back(ground);
+        m_simpleObjWithNormalMap.push_back(ground);
 
         auto staticEnvGlass = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/maps/M6_Static1Glass.fbx",
                                                                                        0.0f,

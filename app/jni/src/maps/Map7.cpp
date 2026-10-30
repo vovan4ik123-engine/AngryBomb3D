@@ -39,7 +39,7 @@ namespace AngryBomb3D
                                                                       EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
                                                                       EnumsAndVars::SceneGR_GROUND);
         ground->setFriction(1.0f);
-        m_allEnv.push_back(ground);
+        m_simpleObjWithNormalMap.push_back(ground);
 
         auto dynamicEnvWood = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/maps/M7_Dynamic1Wood_2kg.fbx",
                                                                                        1.8f,
