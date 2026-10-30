@@ -591,7 +591,7 @@ namespace AngryBomb3D
 
         // Update shoot dir after camera.
         const float sliderRange_0_1 = m_gui->sliderPower->getValue();
-        const float baseAddedAngle =              26.0f;
+        const float baseAddedAngle =              27.5f;
         const float substrAngleWhenPowerGrowing = 24.0f * std::pow(sliderRange_0_1, 0.185f);
         const float addAngleAtMaxPower =          2.0f * std::pow(sliderRange_0_1, 1.85f);
         const float angleBetweenWorldUpAndCameraBack = BeryllUtils::Common::getAngleInRadians(BeryllConstants::worldUp, Beryll::Camera::getCameraBackDirectionXYZ());
