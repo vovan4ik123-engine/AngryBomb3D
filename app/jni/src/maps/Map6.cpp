@@ -39,7 +39,8 @@ namespace AngryBomb3D
                                                                       EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
                                                                       EnumsAndVars::SceneGR_GROUND);
         ground->setFriction(1.0f);
-        m_simpleObjWithNormalMap.push_back(ground);
+        m_simpleObjNormalMap.push_back(ground);
+        m_allSimpleEnv.push_back(ground);
 
         auto staticEnvGlass = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/maps/M6_Static1Glass.fbx",
                                                                                        0.0f,
@@ -51,8 +52,9 @@ namespace AngryBomb3D
         for(const auto& env : staticEnvGlass)
         {
             env->setFriction(0.05f);
+            m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
-            m_allEnv.push_back(env);
+            m_allSimpleEnv.push_back(env);
         }
 
         auto staticEnvStone = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/maps/M6_Static1Stone.fbx",
@@ -65,8 +67,9 @@ namespace AngryBomb3D
         for(const auto& env : staticEnvStone)
         {
             env->setFriction(1.0f);
+            m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
-            m_allEnv.push_back(env);
+            m_allSimpleEnv.push_back(env);
         }
 
         auto dynamicEnvWood = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/maps/M6_Dynamic1Wood_1kg.fbx",
@@ -82,9 +85,9 @@ namespace AngryBomb3D
             env->setFriction(1.0f);
             env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
             env->setDamping(0.1f, 0.2f);
+            m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
-            m_animatedOrDynamicObjects.push_back(env);
-            m_allEnv.push_back(env);
+            m_allSimpleEnv.push_back(env);
         }
 
         auto dynamicEnvStone = std::make_shared<Beryll::SimpleCollidingObject>("models3D/maps/M6_Dynamic1Stone_100kg.fbx",
@@ -99,9 +102,9 @@ namespace AngryBomb3D
         dynamicEnvStone->setFriction(1.0f);
         dynamicEnvStone->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
         dynamicEnvStone->setDamping(0.0f, 0.0f);
+        m_simpleObjDiffuse.push_back(dynamicEnvStone);
         m_simpleObjForShadowMap.push_back(dynamicEnvStone);
-        m_animatedOrDynamicObjects.push_back(dynamicEnvStone);
-        m_allEnv.push_back(dynamicEnvStone);
+        m_allSimpleEnv.push_back(dynamicEnvStone);
 
         m_dynamicStoneID = dynamicEnvStone->getID();
     }
@@ -122,7 +125,6 @@ namespace AngryBomb3D
             enemy->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
             enemy->setDamping(0.1f, 0.2f);
             m_simpleObjForShadowMap.push_back(enemy);
-            m_animatedOrDynamicObjects.push_back(enemy);
             m_allEnemies.emplace_back(enemy);
         }
     }
@@ -136,8 +138,9 @@ namespace AngryBomb3D
         for(const auto& point : points)
         {
             origins.push_back(point->getOrigin());
+            m_simpleObjDiffuse.push_back(point);
             m_simpleObjForShadowMap.push_back(point);
-            m_allEnv.push_back(point);
+            m_allSimpleEnv.push_back(point);
         }
 
         m_player->setPlayerPoints(std::move(origins));
@@ -152,17 +155,14 @@ namespace AngryBomb3D
         {
             for(int objCollidingWithID : stoneCollisions)
             {
-                for(const std::shared_ptr<Beryll::SceneObject>& so : m_animatedOrDynamicObjects)
+                for(const std::shared_ptr<Beryll::SceneObject>& so : m_allSimpleEnv)
                 {
-                    if(so->getID() == objCollidingWithID && so->getOrigin().y < 5.0f && ((so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS ||
-                                                                                           so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_WOOD ||
-                                                                                           so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_STONE)))
+                    if(so->getID() == objCollidingWithID && so->getOrigin().y < 5.0f && so->getCollisionFlag() == Beryll::CollisionFlags::DYNAMIC)
                     {
                         so->disableForEver();
                     }
                 }
             }
-
         }
     }
 }

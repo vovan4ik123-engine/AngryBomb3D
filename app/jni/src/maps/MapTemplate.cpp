@@ -37,7 +37,8 @@ namespace AngryBomb3D
                                                                                      EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
                                                                                      EnumsAndVars::SceneGR_GROUND);
         ground->setFriction(1.0f);
-        m_simpleObjWithNormalMap.push_back(ground);
+        m_simpleObjNormalMap.push_back(ground);
+        m_allSimpleEnv.push_back(ground);
 
         auto staticEnv = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map/StaticEnv.fbx",
                                                                                   0.0f,
@@ -50,7 +51,7 @@ namespace AngryBomb3D
         {
             env->setFriction(0.5f);
             m_simpleObjForShadowMap.push_back(env);
-            m_allEnv.push_back(env);
+            m_allSimpleEnv.push_back(env);
         }
 
         auto dynamicEnv1 = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/map/DynamicEnv1.fbx",
@@ -65,8 +66,7 @@ namespace AngryBomb3D
         {
             env->setFriction(0.5f);
             m_simpleObjForShadowMap.push_back(env);
-            m_animatedOrDynamicObjects.push_back(env);
-            m_allEnv.push_back(env);
+            m_allSimpleEnv.push_back(env);
         }
     }
 
@@ -84,7 +84,6 @@ namespace AngryBomb3D
         {
             enemy->setFriction(0.5f);
             m_simpleObjForShadowMap.push_back(enemy);
-            m_animatedOrDynamicObjects.push_back(enemy);
             m_allEnemies.emplace_back(enemy);
         }
     }
@@ -99,7 +98,7 @@ namespace AngryBomb3D
         {
             origins.push_back(point->getOrigin());
             m_simpleObjForShadowMap.push_back(point);
-            m_allEnv.push_back(point);
+            m_allSimpleEnv.push_back(point);
         }
 
         m_player->setPlayerPoints(std::move(origins));

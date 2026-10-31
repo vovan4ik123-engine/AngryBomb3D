@@ -9,7 +9,7 @@ namespace AngryBomb3D
         loadEnemies();
         loadPlayerPoints();
         loadBulletSet(BulletType::STANDARD_1_KG, 1, 3.0f);
-        m_bulletMaxThrowPower = 105.0f;
+        m_bulletMaxThrowPower = 110.0f;
 
         loadShaders();
         m_eyesLookAngleXZ = 4.5586f;
@@ -39,7 +39,8 @@ namespace AngryBomb3D
                                                                       EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET,
                                                                       EnumsAndVars::SceneGR_GROUND);
         ground->setFriction(1.0f);
-        m_simpleObjWithNormalMap.push_back(ground);
+        m_simpleObjNormalMap.push_back(ground);
+        m_allSimpleEnv.push_back(ground);
 
         auto dynamicEnvWood = Beryll::SimpleCollidingObject::loadManyModelsFromOneFile("models3D/maps/M1_Dynamic1Wood_2kg.fbx",
                                                                                         2.0f,
@@ -54,9 +55,9 @@ namespace AngryBomb3D
             env->setFriction(1.0f);
             env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
             env->setDamping(0.1f, 0.2f);
+            m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
-            m_animatedOrDynamicObjects.push_back(env);
-            m_allEnv.push_back(env);
+            m_allSimpleEnv.push_back(env);
         }
     }
 
@@ -76,7 +77,6 @@ namespace AngryBomb3D
             enemy->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
             enemy->setDamping(0.1f, 0.2f);
             m_simpleObjForShadowMap.push_back(enemy);
-            m_animatedOrDynamicObjects.push_back(enemy);
             m_allEnemies.emplace_back(enemy);
         }
     }
@@ -90,8 +90,9 @@ namespace AngryBomb3D
         for(const auto& point : points)
         {
             origins.push_back(point->getOrigin());
+            m_simpleObjDiffuse.push_back(point);
             m_simpleObjForShadowMap.push_back(point);
-            m_allEnv.push_back(point);
+            m_allSimpleEnv.push_back(point);
         }
 
         m_player->setPlayerPoints(std::move(origins));

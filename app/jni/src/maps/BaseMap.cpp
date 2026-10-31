@@ -6,9 +6,12 @@ namespace AngryBomb3D
 {
     BaseMap::BaseMap(std::shared_ptr<PlayStateGUILayer> gui) : m_gui(std::move(gui))
     {
-        m_animatedOrDynamicObjects.reserve(800);
-        m_allEnv.reserve(800);
+        m_simpleObjDiffuse.reserve(800);
+        m_simpleObjNormalMap.reserve(20);
         m_simpleObjForShadowMap.reserve(800);
+
+        m_allSimpleEnv.reserve(800);
+        m_allBullets.reserve(20);
         m_allEnemies.reserve(20);
 
         //BR_INFO(" X:%f Y:%f Z:%f", .x, .y, .z);
@@ -25,9 +28,6 @@ namespace AngryBomb3D
     void BaseMap::updateBeforePhysics()
     {
         //BR_INFO("%s", "BaseMap::updateBeforePhysics()");
-        if(EnumsAndVars::mapPlayerWin || EnumsAndVars::mapPlayerLose)
-            return;
-
         EnumsAndVars::mapPlayTimeSec += Beryll::TimeStep::getTimeStepSec();
 
         for(int i = 0; i < EnumsAndVars::notEmptyBulletsSets.size(); ++i)
@@ -45,26 +45,23 @@ namespace AngryBomb3D
     void BaseMap::updateAfterPhysics()
     {
         //BR_INFO("%s", "BaseMap::updateAfterPhysics()");
-        if(EnumsAndVars::mapPlayerWin || EnumsAndVars::mapPlayerLose)
-            return;
-
-        for(const std::shared_ptr<Beryll::SceneObject>& so : m_animatedOrDynamicObjects)
+        for(const std::shared_ptr<Beryll::SceneObject>& so : m_allSimpleEnv)
         {
             if(so->getIsEnabledUpdate())
             {
                 so->updateAfterPhysics();
 
-                if((so->getSceneObjectGroup() == EnumsAndVars::SceneGR_PLAYER_BULLET ||
-                    so->getSceneObjectGroup() == EnumsAndVars::SceneGR_ENEMY ||
-                    so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS ||
-                    so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_WOOD ||
-                    so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_STONE) && so->getOrigin().y < -50.0f)
+                if(so->getCollisionFlag() == Beryll::CollisionFlags::DYNAMIC && so->getOrigin().y < -50.0f)
                 {
                     so->disableForEver();
                     BR_INFO("%s", "so->disableForEver();");
                 }
             }
         }
+
+        for(auto& bullet : m_allBullets)
+            if(bullet->getIsEnabledUpdate())
+                bullet->updateAfterPhysics();
 
         for(auto& enemy : m_allEnemies)
             enemy.update();
@@ -109,7 +106,7 @@ namespace AngryBomb3D
         m_simpleObjSunLightShadows->setMatrix3x3Float("normalMatrix", glm::mat3(modelMatrix));
         Beryll::Renderer::drawObject(m_player->getObj(), modelMatrix, m_simpleObjSunLightShadows);
 
-        for(const auto& staticObj : m_allEnv)
+        for(const auto& staticObj : m_simpleObjDiffuse)
         {
             if(staticObj->getIsEnabledDraw())
             {
@@ -154,7 +151,7 @@ namespace AngryBomb3D
         m_simpleObjSunLightShadowsNormals->set1Float("ambientLight", m_ambientLight);
         m_simpleObjSunLightShadowsNormals->set1Float("specularLightStrength", 0.6f);
 
-        for(const auto& normalMapObj : m_simpleObjWithNormalMap)
+        for(const auto& normalMapObj : m_simpleObjNormalMap)
         {
             modelMatrix = normalMapObj->getModelMatrix();
             m_simpleObjSunLightShadowsNormals->setMatrix4x4Float("MVPLightMatrix", m_sunLightVPMatrix * modelMatrix);
@@ -197,20 +194,20 @@ namespace AngryBomb3D
 //            m_simpleObjSemiTransparent->set1Int("trajectoryHasHit", 0);
 //        }
 //
-//        std::sort(m_allEnv.begin(), m_allEnv.end(), [&](std::shared_ptr<Beryll::BaseSimpleObject>& o1, std::shared_ptr<Beryll::BaseSimpleObject>& o2)
+//        std::sort(m_simpleObjDiffuse.begin(), m_simpleObjDiffuse.end(), [&](std::shared_ptr<Beryll::BaseSimpleObject>& o1, std::shared_ptr<Beryll::BaseSimpleObject>& o2)
 //        {
 //            return (glm::distance(camPos, o1->getOrigin()) > glm::distance(camPos, o2->getOrigin()));
 //        });
 //
-//        for(const auto& staticObj : m_allEnv)
+//        for(const auto& obj : m_simpleObjDiffuse)
 //        {
-//            if(staticObj->getIsEnabledDraw())
+//            if(obj->getIsEnabledDraw())
 //            {
-//                modelMatrix = staticObj->getModelMatrix();
+//                modelMatrix = obj->getModelMatrix();
 //                m_simpleObjSemiTransparent->setMatrix4x4Float("MVPLightMatrix", m_sunLightVPMatrix * modelMatrix);
 //                m_simpleObjSemiTransparent->setMatrix4x4Float("modelMatrix", modelMatrix);
 //                m_simpleObjSemiTransparent->setMatrix3x3Float("normalMatrix", glm::mat3(modelMatrix));
-//                Beryll::Renderer::drawObject(staticObj, modelMatrix, m_simpleObjSemiTransparent);
+//                Beryll::Renderer::drawObject(obj, modelMatrix, m_simpleObjSemiTransparent);
 //            }
 //        }
     }
@@ -298,7 +295,6 @@ namespace AngryBomb3D
                                                                           EnumsAndVars::CollGr_DYNAMIC_ENV | EnumsAndVars::CollGr_STATIC_ENV,
                                                                           EnumsAndVars::SceneGR_PLAYER_BULLET);
 
-            m_animatedOrDynamicObjects.push_back(bullet);
             m_simpleObjForShadowMap.push_back(bullet);
             m_allBullets.push_back(bullet);
 
@@ -388,19 +384,19 @@ namespace AngryBomb3D
             {
                 for(int objCollidingWithID : bulletCollisions)
                 {
-                    for(const auto& objEnv : m_allEnv)
+                    for(const auto& objEnv : m_allSimpleEnv)
                     {
                         if(objEnv->getID() == objCollidingWithID && objEnv->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS)
                         {
-                            const float partSize = (objEnv->getXZRadius() + objEnv->getObjectHeight()) * 0.18f;
-                            Beryll::ParticleSystem::EmitCubesFromCenter(10, 0.45f, partSize, partSize * 0.6f,
-                                                                        glm::vec4{0.0f, 0.5f, 1.0f, 1.0f}, glm::vec4{0.0f, 0.5f, 1.0f, 1.0f},
-                                                                        bullet->getOrigin(),
-                                                                        glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
-                                                                                  Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
-                                                                                  Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f},
-                                                                        10.0f);
-                            objEnv->disableForEver();
+                            breakGlassBrick(objEnv);
+                            wakeUpObjects = true;
+                        }
+                        else if(objEnv->getID() == objCollidingWithID && (objEnv->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMITE_RADIUS_10 ||
+                                                                          objEnv->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMITE_RADIUS_20 ||
+                                                                          objEnv->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMITE_RADIUS_30 ||
+                                                                          objEnv->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMITE_RADIUS_40))
+                        {
+                            explodeDynamite(objEnv);
                             wakeUpObjects = true;
                         }
                     }
@@ -411,23 +407,88 @@ namespace AngryBomb3D
         if(wakeUpObjects)
         {
             BR_INFO("%s", "Make active all dynamic objects.")
-
-            for(const std::shared_ptr<Beryll::SceneObject>& so : m_animatedOrDynamicObjects)
+            for(const std::shared_ptr<Beryll::SceneObject>& so : m_allSimpleEnv)
             {
-                if(so->getIsEnabledUpdate() && (so->getSceneObjectGroup() == EnumsAndVars::SceneGR_ENEMY ||
-                                                so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_GLASS ||
-                                                so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_WOOD ||
-                                                so->getSceneObjectGroup() == EnumsAndVars::SceneGR_BRICK_STONE))
+                if(so->getIsEnabledUpdate() && so->getCollisionFlag() == Beryll::CollisionFlags::DYNAMIC)
                 {
                     so->activate();
                 }
             }
+
+            for(auto& enemy : m_allEnemies)
+                enemy.getObj()->activate();
         }
+    }
+
+    void BaseMap::breakGlassBrick(std::shared_ptr<Beryll::BaseSimpleObject> glass)
+    {
+        const float partSize = (glass->getXZRadius() + glass->getObjectHeight()) * 0.18f;
+        Beryll::ParticleSystem::EmitCubesFromCenter(10, 0.45f, partSize, partSize * 0.6f,
+                                                    glm::vec4{0.0f, 0.5f, 1.0f, 1.0f}, glm::vec4{0.0f, 0.5f, 1.0f, 1.0f},
+                                                    glass->getOrigin(),
+                                                    glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
+                                                              Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
+                                                              Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f},
+                                                    10.0f);
+        glass->disableForEver();
+    }
+
+    void BaseMap::explodeDynamite(std::shared_ptr<Beryll::BaseSimpleObject> dynamite)
+    {
+        const float partSize = (dynamite->getXZRadius() + dynamite->getObjectHeight()) * 0.4f;
+        Beryll::ParticleSystem::EmitCubesFromCenter(6, 0.5f, partSize, partSize * 2.0f,
+                                                    glm::vec4{1.0f, 0.98f, 0.2578f, 1.0f}, glm::vec4{1.0f, 0.98f, 0.2578f, 1.0f},
+                                                    dynamite->getOrigin(),
+                                                    glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
+                                                              Beryll::RandomGenerator::getFloat() * 8.0f - 2.0f,
+                                                              Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f},
+                                                    20.0f);
+        Beryll::ParticleSystem::EmitCubesFromCenter(6, 0.5f, partSize, partSize * 2.0f,
+                                                    glm::vec4{0.98f, 0.332f, 0.078f, 1.0f}, glm::vec4{0.98f, 0.332f, 0.078f, 1.0f},
+                                                    dynamite->getOrigin(),
+                                                    glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
+                                                              Beryll::RandomGenerator::getFloat() * 8.0f - 2.0f,
+                                                              Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f},
+                                                    20.0f);
+        Beryll::ParticleSystem::EmitCubesFromCenter(6, 0.6f, partSize, partSize * 1.4f,
+                                                    glm::vec4{0.5f, 0.5f, 0.5f, 1.0f}, glm::vec4{0.5f, 0.5f, 0.5f, 1.0f},
+                                                    dynamite->getOrigin(),
+                                                    glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
+                                                              Beryll::RandomGenerator::getFloat() * 8.0f - 2.0f,
+                                                              Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f},
+                                                    20.0f);
+
+        float explosionRadiusSquared = 10.0f;
+        if(dynamite->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMITE_RADIUS_20)
+            explosionRadiusSquared = 20.0f;
+        else if(dynamite->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMITE_RADIUS_30)
+            explosionRadiusSquared = 30.0f;
+        else if(dynamite->getSceneObjectGroup() == EnumsAndVars::SceneGR_DYNAMITE_RADIUS_40)
+            explosionRadiusSquared = 40.0f;
+
+        explosionRadiusSquared = explosionRadiusSquared * explosionRadiusSquared;
+        const float basePowerFor1kg = 7.0f;
+        for(const std::shared_ptr<Beryll::SceneObject>& so : m_allSimpleEnv)
+        {
+            if(so->getCollisionFlag() == Beryll::CollisionFlags::DYNAMIC &&
+               glm::distance2(so->getOrigin(), dynamite->getOrigin()) < explosionRadiusSquared)
+            {
+                so->applyCentralImpulse(glm::fastNormalize(so->getOrigin() - dynamite->getOrigin()) *
+                                        ((basePowerFor1kg + (Beryll::RandomGenerator::getFloat() * 4.0f)) * so->getCollisionMass()));
+
+                so->applyTorqueImpulse(glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
+                                                 Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
+                                                 Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f} *
+                                       (Beryll::RandomGenerator::getFloat() + 1.0f) * so->getCollisionMass());
+            }
+        }
+
+        dynamite->disableForEver();
     }
 
     void BaseMap::handleWinLose()
     {
-        if(BaseEnemy::getActiveCount() == 0 && !getIsDynamicObjectsMoves())
+        if(BaseEnemy::getActiveCount() <= 0 && !getIsEnvObjectsMoves())
         {
             BR_INFO("%s", "Player win.");
             EnumsAndVars::mapPlayerWin = true;
@@ -443,13 +504,15 @@ namespace AngryBomb3D
         }
     }
 
-    bool BaseMap::getIsDynamicObjectsMoves()
+    bool BaseMap::getIsEnvObjectsMoves()
     {
-        for(const std::shared_ptr<Beryll::SceneObject>& so : m_animatedOrDynamicObjects)
+        const float farthestDistanceSquared = (m_player->getFarthestPointDistance() * 1.5f) * (m_player->getFarthestPointDistance() * 1.5f);
+        for(const std::shared_ptr<Beryll::SceneObject>& so : m_allSimpleEnv)
         {
-            if(so->getSceneObjectGroup() != EnumsAndVars::SceneGR_PLAYER_BULLET &&
-               glm::length(so->getOrigin()) < m_player->getFarthestPointDistance() * 1.2f &&
-               (glm::length(so->getLinearVelocity()) > 1.0f || glm::length(so->getAngularVelocity()) > 1.0f))
+            if(so->getCollisionFlag() == Beryll::CollisionFlags::DYNAMIC &&
+               so->getSceneObjectGroup() != EnumsAndVars::SceneGR_PLAYER_BULLET &&
+               glm::distance2(glm::vec3{0.0f}, so->getOrigin()) < farthestDistanceSquared &&
+               (glm::distance2(glm::vec3{0.0f}, so->getLinearVelocity()) > 1.0f || glm::distance2(glm::vec3{0.0f}, so->getAngularVelocity()) > 1.0f))
             {
                 return true;
             }

@@ -27,10 +27,12 @@ namespace AngryBomb3D
         void handleControls();
         void handleBulletsSets();
         virtual void handleCollisions();
+        virtual void breakGlassBrick(std::shared_ptr<Beryll::BaseSimpleObject> glass);
+        virtual void explodeDynamite(std::shared_ptr<Beryll::BaseSimpleObject> dynamite);
         void handleWinLose();
         void handleCamera();
 
-        bool getIsDynamicObjectsMoves();
+        bool getIsEnvObjectsMoves();
 
         void updateSunPosition(const glm::vec3& pos);
 
@@ -39,12 +41,15 @@ namespace AngryBomb3D
         std::shared_ptr<Player> m_player;
         std::unique_ptr<Beryll::SkyBox> m_skyBox;
 
-        std::vector<std::shared_ptr<Beryll::SceneObject>> m_animatedOrDynamicObjects;
-        std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_allEnv;
-        std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_simpleObjWithNormalMap;
+        // Only for drawing.
+        std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_simpleObjDiffuse;
+        std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_simpleObjNormalMap;
+        std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_simpleObjForShadowMap;
+        // Only for logic.
+        std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_allSimpleEnv;
+        // Drawing and logic.
         std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_allBullets;
         std::vector<BaseEnemy> m_allEnemies;
-        std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_simpleObjForShadowMap;
 
         // Shaders and light.
         std::shared_ptr<Beryll::Shader> m_simpleObjSunLightShadows;
