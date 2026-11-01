@@ -4,11 +4,11 @@
 
 namespace AngryBomb3D
 {
-    class Map : public BaseMap
+    class Map9 : public BaseMap
     {
     public:
-        Map(std::shared_ptr<PlayStateGUILayer> gui);
-        ~Map() override;
+        Map9(std::shared_ptr<PlayStateGUILayer> gui);
+        ~Map9() override;
 
     private:
         void loadEnv();

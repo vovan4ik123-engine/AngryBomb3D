@@ -28,6 +28,7 @@ add_library(main SHARED main.cpp
                         # Maps.
                         maps/BaseMap.cpp
                         maps/Map1.cpp maps/Map2.cpp maps/Map3.cpp maps/Map4.cpp maps/Map5.cpp maps/Map6.cpp maps/Map7.cpp maps/Map8.cpp
+                        maps/Map9.cpp
             )
 
 target_include_directories(main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
