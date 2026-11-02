@@ -19,8 +19,13 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_STL=c++_static",
-                          "-DCMAKE_CXX_FLAGS=-O3 -ffast-math -pthread",
-                          "-DCMAKE_SHARED_LINKER_FLAGS=-pthread" // , "-DCMAKE_BUILD_TYPE=Release"
+                          //"-DCMAKE_BUILD_TYPE=Release",
+                          // For C++ files (.cpp, .cc).
+                          "-DCMAKE_CXX_FLAGS=-O3 -ffast-math -pthread -ftree-vectorize -flto=thin -fomit-frame-pointer -fno-plt",
+                          // FOR C FILES (.c) -> Added this to optimize C dependencies.
+                          "-DCMAKE_C_FLAGS=-O3 -pthread -ftree-vectorize -flto=thin -fomit-frame-pointer -fno-plt",
+                          // For the Linker.
+                          "-DCMAKE_SHARED_LINKER_FLAGS=-pthread -flto=thin -Wl,--gc-sections -Wl,--icf=all"
                 // abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
                 abiFilters 'arm64-v8a'
                 cFlags += "-DAndroidPackageName=com.angryBomb3D.app"
@@ -32,6 +37,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }
         }
     }
     
