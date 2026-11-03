@@ -12,6 +12,7 @@ namespace AngryBomb3D
         // Maps progress.
         static void sendMapStart();
         static void sendMapWin();
+        static void sendMapLose();
 
         // Custom message.
         static void sendCustomMessage(const std::string text);
@@ -19,5 +20,6 @@ namespace AngryBomb3D
     private:
         static bool m_canSendMapStartEvent;
         static bool m_canSendMapWinEvent;
+        static bool m_canSendMapLoseEvent;
     };
 }

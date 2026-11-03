@@ -53,10 +53,7 @@ namespace EnumsAndVars
     constexpr inline Beryll::SceneObjectGroups SceneGR_BRICK_GLASS = Beryll::SceneObjectGroups::GROUP_5;
     constexpr inline Beryll::SceneObjectGroups SceneGR_BRICK_WOOD = Beryll::SceneObjectGroups::GROUP_6;
     constexpr inline Beryll::SceneObjectGroups SceneGR_BRICK_STONE = Beryll::SceneObjectGroups::GROUP_7;
-    constexpr inline Beryll::SceneObjectGroups SceneGR_DYNAMITE_RADIUS_10 = Beryll::SceneObjectGroups::GROUP_8;
-    constexpr inline Beryll::SceneObjectGroups SceneGR_DYNAMITE_RADIUS_20 = Beryll::SceneObjectGroups::GROUP_9;
-    constexpr inline Beryll::SceneObjectGroups SceneGR_DYNAMITE_RADIUS_30 = Beryll::SceneObjectGroups::GROUP_10;
-    constexpr inline Beryll::SceneObjectGroups SceneGR_DYNAMITE_RADIUS_40 = Beryll::SceneObjectGroups::GROUP_11;
+    constexpr inline Beryll::SceneObjectGroups SceneGR_DYNAMITE = Beryll::SceneObjectGroups::GROUP_8;
 
     constexpr inline glm::vec3 bulletGravity{0.0f, -20.0f, 0.0f};
 
@@ -81,9 +78,11 @@ namespace EnumsAndVars
         BR_INFO("%s", "EnumsAndVars::reset()");
         showGUIControls = true;
 
+        throwAngleRadians = 0.0f;
         showPlayerMoveArrows = false;
 
         notEmptyBulletsSets.clear();
+        emptyBulletsSetsWithActiveBullets.clear();
         currentBulletSetIndex = 0;
 
         // Map.

@@ -155,7 +155,7 @@ namespace AngryBomb3D
         {
             for(int objCollidingWithID : stoneCollisions)
             {
-                for(const std::shared_ptr<Beryll::SceneObject>& so : m_allSimpleEnv)
+                for(const std::shared_ptr<Beryll::BaseSimpleObject>& so : m_allSimpleEnv)
                 {
                     if(so->getID() == objCollidingWithID && so->getOrigin().y < 5.0f && so->getCollisionFlag() == Beryll::CollisionFlags::DYNAMIC)
                     {

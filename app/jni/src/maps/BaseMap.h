@@ -19,23 +19,6 @@ namespace AngryBomb3D
         virtual void updateAfterPhysics();
         virtual void draw();
 
-        // Load.
-        void loadShaders();
-        void loadPlayer();
-        void loadBulletSet(const BulletType type, const int count, const float disableTimeAfterFirstCollision);
-
-        void handleControls();
-        void handleBulletsSets();
-        virtual void handleCollisions();
-        virtual void breakGlassBrick(std::shared_ptr<Beryll::BaseSimpleObject> glass);
-        virtual void explodeDynamite(std::shared_ptr<Beryll::BaseSimpleObject> dynamite);
-        void handleWinLose();
-        void handleCamera();
-
-        bool getIsEnvObjectsMoves();
-
-        void updateSunPosition(const glm::vec3& pos);
-
     protected:
         const std::shared_ptr<PlayStateGUILayer> m_gui;
         std::shared_ptr<Player> m_player;
@@ -50,6 +33,15 @@ namespace AngryBomb3D
         // Drawing and logic.
         std::vector<std::shared_ptr<Beryll::BaseSimpleObject>> m_allBullets;
         std::vector<BaseEnemy> m_allEnemies;
+
+        struct DynamiteInfo
+        {
+            const std::shared_ptr<Beryll::BaseSimpleObject> obj; // Current data.
+            const glm::vec3 initialPos{0.0f}; // Objects origin initial position.
+            const float radius = 10.0f;
+            const float power = 10.0f;
+        };
+        std::vector<DynamiteInfo> m_dynamiteInfo; // Dynamite have logic based on distance from initial position.
 
         // Shaders and light.
         std::shared_ptr<Beryll::Shader> m_simpleObjSunLightShadows;
@@ -84,5 +76,20 @@ namespace AngryBomb3D
         glm::vec3 m_bulletImpulseVector{0.0f};
         glm::vec3 m_bulletStartPosition{0.0f};
         float m_bulletMaxThrowPower = 100.0f;
+
+        // Load.
+        void loadShaders();
+        void loadPlayer();
+        void loadBulletSet(const BulletType type, const int count, const float disableTimeAfterFirstCollision);
+        // Logic
+        void handleControls();
+        void handleBulletsSets();
+        virtual void handleCollisions();
+        virtual void breakGlassBrick(std::shared_ptr<Beryll::BaseSimpleObject> glass);
+        virtual void explodeDynamite(const DynamiteInfo& dynamite);
+        void handleWinLose();
+        void handleCamera();
+        bool getIsEnvObjectsMoves();
+        void updateSunPosition(const glm::vec3& pos);
     };
 }

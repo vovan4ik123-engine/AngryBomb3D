@@ -85,7 +85,7 @@ namespace AngryBomb3D
                                                                                  EnumsAndVars::CollGr_DYNAMIC_ENV,
                                                                                  EnumsAndVars::CollGr_STATIC_ENV | EnumsAndVars::CollGr_PLAYER_BULLET |
                                                                                     EnumsAndVars::CollGr_DYNAMIC_ENV,
-                                                                                 EnumsAndVars::SceneGR_DYNAMITE_RADIUS_40);
+                                                                                 EnumsAndVars::SceneGR_DYNAMITE);
         for(const auto& env : dynamite)
         {
             env->setFriction(1.0f);
@@ -94,6 +94,8 @@ namespace AngryBomb3D
             m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
             m_allSimpleEnv.push_back(env);
+
+            m_dynamiteInfo.emplace_back(DynamiteInfo{env, env->getOrigin(), 40.0f, 20.0f});
         }
     }
 

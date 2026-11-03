@@ -6,12 +6,14 @@ namespace AngryBomb3D
     // Maps progress.
     bool SendStatisticsHelper::m_canSendMapStartEvent = true;
     bool SendStatisticsHelper::m_canSendMapWinEvent = true;
+    bool SendStatisticsHelper::m_canSendMapLoseEvent = true;
 
     void SendStatisticsHelper::reset()
     {
         // Maps progress.
         m_canSendMapStartEvent = true;
         m_canSendMapWinEvent = true;
+        m_canSendMapLoseEvent = true;
     }
 
     void SendStatisticsHelper::sendMapStart()
@@ -21,7 +23,6 @@ namespace AngryBomb3D
             m_canSendMapStartEvent = false;
 
             std::string eventType = "map_" + std::to_string(EnumsAndVars::MapsProgress::currentMapIndex) + "_start";
-
             Beryll::GoogleAnalytics::getInstance()->sendEventEmpty(eventType);
         }
     }
@@ -33,7 +34,17 @@ namespace AngryBomb3D
             m_canSendMapWinEvent = false;
 
             std::string eventType = "map_" + std::to_string(EnumsAndVars::MapsProgress::currentMapIndex) + "_win";
+            Beryll::GoogleAnalytics::getInstance()->sendEventEmpty(eventType);
+        }
+    }
 
+    void SendStatisticsHelper::sendMapLose()
+    {
+        if(m_canSendMapLoseEvent)
+        {
+            m_canSendMapLoseEvent = false;
+
+            std::string eventType = "map_" + std::to_string(EnumsAndVars::MapsProgress::currentMapIndex) + "_lose";
             Beryll::GoogleAnalytics::getInstance()->sendEventEmpty(eventType);
         }
     }
