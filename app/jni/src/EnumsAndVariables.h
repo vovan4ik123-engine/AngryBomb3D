@@ -26,8 +26,8 @@ namespace EnumsAndVars
         static inline int FPSLimit = 60;
         // Not stored in DB.
         static constexpr inline float cameraDistance = 20.0f;
-        static constexpr inline float cameraHorizontalSpeed = 350.0f * 0.5f;
-        static constexpr inline float cameraVerticalSpeed = 125.0f * 0.5f;
+        static constexpr inline float cameraHorizontalSpeed = 175.0f * 0.88f;
+        static constexpr inline float cameraVerticalSpeed = 62.5f;
     };
 
     struct MapsProgress

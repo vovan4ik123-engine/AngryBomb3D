@@ -12,6 +12,7 @@
 #include "maps/Map8.h"
 #include "maps/Map9.h"
 #include "maps/Map10.h"
+#include "maps/Map11.h"
 
 namespace AngryBomb3D
 {
@@ -28,25 +29,27 @@ namespace AngryBomb3D
         SendStatisticsHelper::sendMapStart();
 
         if(EnumsAndVars::MapsProgress::currentMapIndex == 1)
-            m_map = std::make_shared<Map1>(gui);
+            m_map = std::make_shared<Map1>(std::move(gui));
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 2)
-            m_map = std::make_shared<Map2>(gui);
+            m_map = std::make_shared<Map2>(std::move(gui));
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 3)
-            m_map = std::make_shared<Map3>(gui);
+            m_map = std::make_shared<Map3>(std::move(gui));
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 4)
-            m_map = std::make_shared<Map4>(gui);
+            m_map = std::make_shared<Map4>(std::move(gui));
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 5)
-            m_map = std::make_shared<Map5>(gui);
+            m_map = std::make_shared<Map5>(std::move(gui));
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 6)
-            m_map = std::make_shared<Map6>(gui);
+            m_map = std::make_shared<Map6>(std::move(gui));
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 7)
-            m_map = std::make_shared<Map7>(gui);
+            m_map = std::make_shared<Map7>(std::move(gui));
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 8)
-            m_map = std::make_shared<Map8>(gui);
+            m_map = std::make_shared<Map8>(std::move(gui));
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 9)
-            m_map = std::make_shared<Map9>(gui);
+            m_map = std::make_shared<Map9>(std::move(gui));
         else if(EnumsAndVars::MapsProgress::currentMapIndex == 10)
-            m_map = std::make_shared<Map10>(gui);
+            m_map = std::make_shared<Map10>(std::move(gui));
+        else if(EnumsAndVars::MapsProgress::currentMapIndex == 11)
+            m_map = std::make_shared<Map11>(std::move(gui));
         else
         {
             BR_ASSERT(false, "Map index does not handled: %d", EnumsAndVars::MapsProgress::currentMapIndex);
