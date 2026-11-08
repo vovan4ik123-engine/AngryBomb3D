@@ -68,7 +68,7 @@ namespace AngryBomb3D
         for(const auto& env : dynamicEnvWood)
         {
             env->setFriction(0.9f);
-            env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            env->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
             env->setDamping(0.1f, 0.2f);
             m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
@@ -86,7 +86,7 @@ namespace AngryBomb3D
         for(const auto& env : dynamicEnvWood2)
         {
             env->setFriction(0.9f);
-            env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            env->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
             env->setDamping(0.1f, 0.2f);
             m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
@@ -104,13 +104,13 @@ namespace AngryBomb3D
         for(const auto& env : dynamite)
         {
             env->setFriction(1.0f);
-            env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            env->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
             env->setDamping(0.1f, 0.2f);
             m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
             m_allSimpleEnv.push_back(env);
 
-            m_dynamiteInfo.emplace_back(DynamiteInfo{env, env->getOrigin(), 50.0f, 20.0f});
+            m_dynamiteInfo.emplace_back(DynamiteInfo{env, env->getOrigin(), 50.0f, 24.0f});
         }
     }
 
@@ -127,7 +127,7 @@ namespace AngryBomb3D
         for(const auto& enemy : enemies)
         {
             enemy->setFriction(1.0f);
-            enemy->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            enemy->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
             enemy->setDamping(0.1f, 0.2f);
             m_simpleObjForShadowMap.push_back(enemy);
             m_allEnemies.emplace_back(enemy);

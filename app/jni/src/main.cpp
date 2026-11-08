@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
     Beryll::Physics::setResolution(5);
     Beryll::Physics::setContactSolverIterations(15);
     Beryll::Physics::setMinAcceptableFPS(20.0f);
+    Beryll::Physics::setSimulationSpeed(0.88f);
 
     Beryll::TextOnScene::setMaxCountToShow(25);
     //Beryll::LoadingScreen::setTextures({"GUI/LoadingScreen1.jpg"});

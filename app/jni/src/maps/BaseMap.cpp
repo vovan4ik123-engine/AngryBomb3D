@@ -499,9 +499,7 @@ namespace AngryBomb3D
             else if(so->getCollisionFlag() == Beryll::CollisionFlags::DYNAMIC &&
                     glm::distance2(so->getOrigin(), dynamite.obj->getOrigin()) < explosionRadiusSquared)
             {
-                so->applyCentralImpulse(glm::fastNormalize(so->getOrigin() - dynamite.obj->getOrigin()) *
-                                        ((dynamite.power + (dynamite.power * Beryll::RandomGenerator::getFloat() * 0.5f)) *
-                                        so->getCollisionMass()));
+                so->applyCentralImpulse(glm::fastNormalize(so->getOrigin() - dynamite.obj->getOrigin()) * dynamite.power * so->getCollisionMass());
 
                 so->applyTorqueImpulse(glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
                                                  Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,

@@ -9,7 +9,7 @@ namespace AngryBomb3D
         loadEnemies();
         loadPlayerPoints();
         loadBulletSet(BulletType::STANDARD_1_KG, 1, 1.5f);
-        m_bulletMaxThrowPower = 100.0f;
+        m_bulletMaxThrowPower = 80.0f;
 
         loadShaders();
         m_eyesLookAngleXZ = -1.1377f;
@@ -53,7 +53,7 @@ namespace AngryBomb3D
         for(const auto& env : dynamicEnvGlass)
         {
             env->setFriction(0.05f);
-            env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            env->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
             env->setDamping(0.1f, 0.2f);
             m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
@@ -71,7 +71,7 @@ namespace AngryBomb3D
         for(const auto& env : dynamicEnvWood)
         {
             env->setFriction(1.0f);
-            env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            env->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
             env->setDamping(0.1f, 0.2f);
             m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
@@ -89,7 +89,7 @@ namespace AngryBomb3D
         for(const auto& env : dynamicEnvWood2)
         {
             env->setFriction(1.0f);
-            env->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            env->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
             env->setDamping(0.1f, 0.2f);
             m_simpleObjDiffuse.push_back(env);
             m_simpleObjForShadowMap.push_back(env);
@@ -110,7 +110,7 @@ namespace AngryBomb3D
         for(const auto& enemy : enemies)
         {
             enemy->setFriction(1.0f);
-            enemy->setGravity(glm::vec3{0.0f, -55.0f, 0.0f});
+            enemy->setGravity(glm::vec3{0.0f, -50.0f, 0.0f});
             enemy->setDamping(0.1f, 0.2f);
             m_simpleObjForShadowMap.push_back(enemy);
             m_allEnemies.emplace_back(enemy);
