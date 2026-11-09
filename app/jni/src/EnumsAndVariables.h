@@ -67,6 +67,7 @@ namespace EnumsAndVars
 
     // Map.
     inline float mapPlayTimeSec = 0.0f;
+    inline float mapLastShootSec = 0.0f;
     inline bool mapPlayerWin = false;
     inline bool mapPlayerLose = false;
 
@@ -87,6 +88,7 @@ namespace EnumsAndVars
 
         // Map.
         mapPlayTimeSec = 0.0f;
+        mapLastShootSec = 0.0f;
         mapPlayerWin = false;
         mapPlayerLose = false;
 

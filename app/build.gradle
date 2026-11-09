@@ -18,11 +18,10 @@ android {
 		
         externalNativeBuild {
             cmake {
-                arguments "-DANDROID_STL=c++_static",
-                          //"-DCMAKE_BUILD_TYPE=Release",
+                arguments "-DANDROID_STL=c++_static", // "-DCMAKE_BUILD_TYPE=Release",
                           // For C++ files (.cpp, .cc).
                           "-DCMAKE_CXX_FLAGS=-O3 -ffast-math -pthread -ftree-vectorize -flto=thin -fomit-frame-pointer -fno-plt",
-                          // FOR C FILES (.c) -> Added this to optimize C dependencies.
+                          // FOR C FILES (.c) -> To optimize C dependencies.
                           "-DCMAKE_C_FLAGS=-O3 -pthread -ftree-vectorize -flto=thin -fomit-frame-pointer -fno-plt",
                           // For the Linker.
                           "-DCMAKE_SHARED_LINKER_FLAGS=-pthread -flto=thin -Wl,--gc-sections -Wl,--icf=all"
@@ -85,6 +84,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // Import the Firebase BoM.
-    implementation platform('com.google.firebase:firebase-bom:34.9.0')
+    implementation platform('com.google.firebase:firebase-bom:35.1.0')
     implementation 'com.google.firebase:firebase-analytics'
 }

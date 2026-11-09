@@ -314,10 +314,13 @@ namespace AngryBomb3D
         if(m_gui->buttonMoveRight->getIsPressed())
             m_player->moveRight();
 
-        if(m_gui->buttonShot->getIsPressed() && !EnumsAndVars::notEmptyBulletsSets.empty())
+        if(m_gui->buttonShot->getIsPressed() &&
+           !EnumsAndVars::notEmptyBulletsSets.empty() &&
+           EnumsAndVars::mapLastShootSec + 0.5f < EnumsAndVars::mapPlayTimeSec) // Protect from double click.
         {
             m_gui->sliderPower->setValue(0.12f);
             EnumsAndVars::notEmptyBulletsSets[EnumsAndVars::currentBulletSetIndex]->shoot(m_bulletStartPosition, m_bulletImpulseVector);
+            EnumsAndVars::mapLastShootSec = EnumsAndVars::mapPlayTimeSec;
         }
     }
 
