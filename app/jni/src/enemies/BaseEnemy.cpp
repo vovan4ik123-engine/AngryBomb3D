@@ -28,7 +28,7 @@ namespace AngryBomb3D
         if(m_obj->getIsEnabledUpdate())
             m_obj->updateAfterPhysics();
 
-        if(glm::distance(m_startPosition, m_obj->getOrigin()) > 10.0f ||
+        if(glm::distance2(m_startPosition, m_obj->getOrigin()) > 25.0f || // 5m.
            Beryll::Physics::getIsCollisionWithGroup(m_obj->getID(), EnumsAndVars::CollGr_PLAYER_BULLET))
         {
             die();

@@ -465,27 +465,27 @@ namespace AngryBomb3D
     void BaseMap::explodeDynamite(const DynamiteInfo& dynamite)
     {
         const float partSize = (dynamite.obj->getXZRadius() + dynamite.obj->getObjectHeight()) * 0.4f;
-        Beryll::ParticleSystem::EmitCubesFromCenter(6, 0.5f, partSize, partSize * 2.0f,
+        Beryll::ParticleSystem::EmitCubesFromCenter(6, 0.4f, partSize, partSize * 2.0f,
                                                     glm::vec4{1.0f, 0.98f, 0.2578f, 1.0f}, glm::vec4{1.0f, 0.98f, 0.2578f, 1.0f},
                                                     dynamite.obj->getOrigin(),
                                                     glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
                                                               Beryll::RandomGenerator::getFloat() * 8.0f - 2.0f,
                                                               Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f},
-                                                    20.0f);
-        Beryll::ParticleSystem::EmitCubesFromCenter(6, 0.5f, partSize, partSize * 2.0f,
+                                                    25.0f);
+        Beryll::ParticleSystem::EmitCubesFromCenter(6, 0.4f, partSize, partSize * 2.0f,
                                                     glm::vec4{0.98f, 0.332f, 0.078f, 1.0f}, glm::vec4{0.98f, 0.332f, 0.078f, 1.0f},
                                                     dynamite.obj->getOrigin(),
                                                     glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
                                                               Beryll::RandomGenerator::getFloat() * 8.0f - 2.0f,
                                                               Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f},
-                                                    20.0f);
-        Beryll::ParticleSystem::EmitCubesFromCenter(6, 0.6f, partSize, partSize * 1.4f,
+                                                    25.0f);
+        Beryll::ParticleSystem::EmitCubesFromCenter(6, 0.45f, partSize, partSize * 1.4f,
                                                     glm::vec4{0.5f, 0.5f, 0.5f, 1.0f}, glm::vec4{0.5f, 0.5f, 0.5f, 1.0f},
                                                     dynamite.obj->getOrigin(),
                                                     glm::vec3{Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f,
                                                               Beryll::RandomGenerator::getFloat() * 8.0f - 2.0f,
                                                               Beryll::RandomGenerator::getFloat() * 8.0f - 4.0f},
-                                                    20.0f);
+                                                    25.0f);
 
         const float explosionRadiusSquared = dynamite.radius * dynamite.radius;
 
