@@ -12,8 +12,8 @@ namespace AngryBomb3D
         m_bulletMaxThrowPower = 75.0f;
 
         loadShaders();
-        m_eyesLookAngleXZ = 5.0f;
-        m_eyesLookAngleY = 1.247f;
+        m_eyesLookAngleXZ = -1.7151f;
+        m_eyesLookAngleY = 1.1312f;
         m_dirToSun = glm::normalize(glm::vec3(0.6f, 1.0f, -0.6f));
         m_sunLightDir = -m_dirToSun;
         m_skyBox = Beryll::Renderer::createSkyBox("skyboxes/whiteClouds");
