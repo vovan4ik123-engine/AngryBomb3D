@@ -14,14 +14,12 @@ namespace AngryBomb3D
         void updateAfterPhysics() override;
         void draw() override;
 
-
-        std::shared_ptr<Beryll::ButtonWithTexture> buttonCancel;
         std::shared_ptr<Beryll::ButtonWithTexture> buttonShot;
         std::shared_ptr<Beryll::ButtonWithTexture> buttonMoveLeft;
         std::shared_ptr<Beryll::ButtonWithTexture> buttonMoveRight;
         std::shared_ptr<Beryll::SliderVertical> sliderPower;
 
-        bool showTutorialCameraTip = false;
+        bool getIsMapChanging() { return (m_buttonReplayMap->getIsPressed() || m_buttonNextMap->getIsPressed()); }
 
     private:
         std::vector<std::shared_ptr<Beryll::GUIObject>> m_guiObjects;
@@ -35,5 +33,11 @@ namespace AngryBomb3D
         std::shared_ptr<Beryll::GUIText> m_statistics2;
         std::shared_ptr<Beryll::GUIText> m_statistics3;
         uint64_t m_statisticsUpdateTime = 0;
+        std::shared_ptr<Beryll::ButtonWithTexture> m_buttonExitToMenu;
+        std::shared_ptr<Beryll::GUITexture> m_backgroundWin;
+        std::shared_ptr<Beryll::GUITexture> m_backgroundLose;
+        std::shared_ptr<Beryll::ButtonWithTexture> m_buttonExitToMenu2;
+        std::shared_ptr<Beryll::ButtonWithTexture> m_buttonReplayMap;
+        std::shared_ptr<Beryll::ButtonWithTexture> m_buttonNextMap;
     };
 }

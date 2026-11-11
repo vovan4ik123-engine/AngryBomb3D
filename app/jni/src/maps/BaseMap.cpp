@@ -27,6 +27,9 @@ namespace AngryBomb3D
 
     void BaseMap::updateBeforePhysics()
     {
+        if(m_gui->getIsMapChanging())
+            return;
+
         //BR_INFO("%s", "BaseMap::updateBeforePhysics()");
         EnumsAndVars::mapPlayTimeSec += Beryll::TimeStep::getTimeStepSec();
 
@@ -44,6 +47,9 @@ namespace AngryBomb3D
 
     void BaseMap::updateAfterPhysics()
     {
+        if(m_gui->getIsMapChanging())
+            return;
+
         //BR_INFO("%s", "BaseMap::updateAfterPhysics()");
         for(const std::shared_ptr<Beryll::BaseSimpleObject>& so : m_allSimpleEnv)
         {
@@ -68,7 +74,7 @@ namespace AngryBomb3D
 
         handleBulletsSets();
         handleCollisions();
-        //handleWinLose();
+        handleWinLose();
         handleCamera();
 
         if(m_player->getIsMoving())
@@ -516,10 +522,11 @@ namespace AngryBomb3D
 
     void BaseMap::handleWinLose()
     {
-        if(BaseEnemy::getActiveCount() <= 0 && !getIsEnvObjectsMoves())
+        if(BaseEnemy::getActiveCount() <= 0 /*&& !getIsEnvObjectsMoves()*/)
         {
             EnumsAndVars::mapPlayerWin = true;
-            SendStatisticsHelper::sendMapWin();
+            EnumsAndVars::mapPlayerLose = false;
+            //SendStatisticsHelper::sendMapWin();
 
             if(EnumsAndVars::MapsProgress::lastOpenedMapIndex == EnumsAndVars::MapsProgress::currentMapIndex)
             {
@@ -550,14 +557,11 @@ namespace AngryBomb3D
 
     void BaseMap::handleCamera()
     {
-        m_gui->showTutorialCameraTip = true;
         const std::vector<Beryll::Finger>& fingers = Beryll::EventHandler::getFingers();
         for(const Beryll::Finger& f : fingers)
         {
             if(f.normalizedPos.x < 0.5f)
                 continue;
-
-            m_gui->showTutorialCameraTip = false;
 
             if(f.downEvent)
             {

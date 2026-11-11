@@ -14,24 +14,25 @@ namespace AngryBomb3D
 
         if(m_statisticsShow)
         {
-            m_statistics1 = Beryll::Renderer::createGUIText("", glm::vec3{0.06f, 0.06f, 0.06f}, glm::vec3{6.5f, 96.3f, 0.0f}, 3.0f);
+            m_statistics1 = Beryll::Renderer::createGUIText("", glm::vec3{0.06f, 0.06f, 0.06f}, glm::vec3{0.5f, 96.3f, 0.0f}, 3.0f);
             m_guiObjects.push_back(m_statistics1);
-            m_statistics2 = Beryll::Renderer::createGUIText("", glm::vec3{0.06f, 0.06f, 0.06f}, glm::vec3{6.5f, 92.3f, 0.0f}, 3.0f);
+            m_statistics2 = Beryll::Renderer::createGUIText("", glm::vec3{0.06f, 0.06f, 0.06f}, glm::vec3{0.5f, 92.3f, 0.0f}, 3.0f);
             m_guiObjects.push_back(m_statistics2);
-            m_statistics3 = Beryll::Renderer::createGUIText("", glm::vec3{0.06f, 0.06f, 0.06f}, glm::vec3{6.5f, 88.3f, 0.0f}, 3.0f);
+            m_statistics3 = Beryll::Renderer::createGUIText("", glm::vec3{0.06f, 0.06f, 0.06f}, glm::vec3{0.5f, 88.3f, 0.0f}, 3.0f);
             m_guiObjects.push_back(m_statistics3);
         }
 
-        buttonCancel = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/Cancel.png", "",
-                                                                   glm::vec3{0.0f, 86.0f, 0.5f}, glm::vec2{14.0f / screenAR, 14.0f});
-        m_guiObjects.push_back(buttonCancel);
+        m_buttonExitToMenu = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/Cancel.png", "",
+                                                                   glm::vec3{93.5f, 100.0f - 6.5f * screenAR, 0.5f},
+                                                                   glm::vec2{6.0f, 6.0f * screenAR}, false, false, false);
+        m_guiObjects.push_back(m_buttonExitToMenu);
 
         sliderPower = std::make_shared<Beryll::SliderVertical>("GUI/slvtrack.png", "GUI/slvthumb.png",
                                                                glm::vec3{1.0f, 5.0f, 0.5f}, glm::vec2{11.0f, 60.0f}, 0.0f, 1.0f);
         m_guiObjects.push_back(sliderPower);
 
-        buttonShot = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/ShotButton.png", "",
-                                                                 glm::vec3{14.0f, 10.0f, 0.5f}, glm::vec2{25.0f / screenAR, 25.0f});
+        buttonShot = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/ShotButton2.png", "",
+                                                                 glm::vec3{14.2f, 10.0f, 0.5f}, glm::vec2{25.0f / screenAR, 25.0f});
         m_guiObjects.push_back(buttonShot);
 
         buttonMoveLeft = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/LeftArrow.png", "",
@@ -43,6 +44,24 @@ namespace AngryBomb3D
                                                                       glm::vec3{60.0f, 5.0f, 0.5f}, glm::vec2{10.0f, 15.0f}, false, false, false);
         m_guiObjects.push_back(buttonMoveRight);
         buttonMoveRight->disable();
+
+        // Win/Lose menu.
+        m_backgroundWin = std::make_shared<Beryll::GUITexture>("GUI/playState/BackgroundWin.png",
+                                                               glm::vec3{86.5f, 27.0f, 0.5f}, glm::vec2{13.0f, 46.0f}, false);
+        m_guiObjects.push_back(m_backgroundWin);
+        m_backgroundLose = std::make_shared<Beryll::GUITexture>("GUI/playState/BackgroundLose.png",
+                                                                glm::vec3{86.5f, 42.0f, 0.5f}, glm::vec2{13.0f, 31.0f}, false);
+        m_guiObjects.push_back(m_backgroundLose);
+
+        m_buttonExitToMenu2 = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/ButtonMenu.png", "",
+                                                                          glm::vec3{87.5f, 59.0f, 0.6f}, glm::vec2{11.0f, 12.0f}, false, false, false);
+        m_guiObjects.push_back(m_buttonExitToMenu2);
+        m_buttonReplayMap = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/ButtonReplay.png", "",
+                                                                        glm::vec3{87.5f, 44.0f, 0.6f}, glm::vec2{11.0f, 12.0f}, false, false, false);
+        m_guiObjects.push_back(m_buttonReplayMap);
+        m_buttonNextMap = std::make_shared<Beryll::ButtonWithTexture>("GUI/playState/ButtonNextMap.png", "",
+                                                                      glm::vec3{87.5f, 29.0f, 0.6f}, glm::vec2{11.0f, 12.0f}, false, false, false);
+        m_guiObjects.push_back(m_buttonNextMap);
 
         // Sort to update nearest objects first. But draw should starts from farest object(in reverse order).
         std::sort(m_guiObjects.begin(), m_guiObjects.end(), [](std::shared_ptr<Beryll::GUIObject> o1, std::shared_ptr<Beryll::GUIObject> o2)
@@ -109,30 +128,50 @@ namespace AngryBomb3D
             }
         }
 
-        if(buttonCancel->getIsPressed())
+        if(!EnumsAndVars::mapPlayerWin && !EnumsAndVars::mapPlayerLose)
+        {
+            m_backgroundWin->disable();
+            m_backgroundLose->disable();
+            m_buttonExitToMenu2->disable();
+            m_buttonReplayMap->disable();
+            m_buttonNextMap->disable();
+        }
+        else if(EnumsAndVars::mapPlayerWin)
+        {
+            m_backgroundWin->enable();
+            m_backgroundLose->disable();
+            m_buttonExitToMenu2->enable();
+            m_buttonReplayMap->enable();
+            if(EnumsAndVars::MapsProgress::currentMapIndex < EnumsAndVars::MapsProgress::maxMapIndex)
+                m_buttonNextMap->enable();
+        }
+        else if(EnumsAndVars::mapPlayerLose)
+        {
+            m_backgroundWin->disable();
+            m_backgroundLose->enable();
+            m_buttonExitToMenu2->enable();
+            m_buttonReplayMap->enable();
+            m_buttonNextMap->disable();
+        }
+
+        if(m_buttonExitToMenu->getIsPressed() || m_buttonExitToMenu2->getIsPressed())
         {
             GameStateHelper::popState();
             GameStateHelper::pushStartMenuState();
             return;
         }
-
-//        if(m_nextMapButtonPressed)
-//        {
-//            GameStateHelper::popState();
-//            ++EnumsAndVars::MapsProgress::currentMapIndex;
-//            DataBaseHelper::storeMapsProgressCurrentMapIndex(EnumsAndVars::MapsProgress::currentMapIndex);
-//            GameStateHelper::pushPlayState();
-//        }
-//        else if(m_replayMapButtonPressed)
-//        {
-//            GameStateHelper::popState();
-//            GameStateHelper::pushPlayState();
-//        }
-//        else if(m_exitButtonPressed)
-//        {
-//            GameStateHelper::popState();
-//            GameStateHelper::pushStartMenuState();
-//        }
+        else if(m_buttonReplayMap->getIsPressed())
+        {
+            GameStateHelper::popState();
+            GameStateHelper::pushPlayState();
+        }
+        else if(m_buttonNextMap->getIsPressed())
+        {
+            GameStateHelper::popState();
+            ++EnumsAndVars::MapsProgress::currentMapIndex;
+            DataBaseHelper::storeMapsProgressCurrentMapIndex(EnumsAndVars::MapsProgress::currentMapIndex);
+            GameStateHelper::pushPlayState();
+        }
     }
 
     void PlayStateGUILayer::updateAfterPhysics()
@@ -157,7 +196,7 @@ namespace AngryBomb3D
             const float space = 1.0f;
             const float totalWidth = EnumsAndVars::notEmptyBulletsSets.size() * width + ((EnumsAndVars::notEmptyBulletsSets.size() - 1) * space);
             const float firstElementLeftPos = 50.0f - totalWidth * 0.5f;
-            const float bottomPos = 4.0f;
+            const float bottomPos = 1.0f;
             float currentElementLeftPos = firstElementLeftPos;
             glm::vec3 newPos{0.0f};
 
@@ -167,7 +206,7 @@ namespace AngryBomb3D
                 newPos.x = currentElementLeftPos;
                 newPos.y = bottomPos;
                 if(EnumsAndVars::currentBulletSetIndex == i)
-                    newPos.y += 2.0f;
+                    newPos.y += 1.0f;
                 if(newPos != EnumsAndVars::notEmptyBulletsSets[i]->buttonBullet->getPositionInPercents())
                 {
                     BR_INFO("%s", "Update button pos.");
@@ -179,7 +218,7 @@ namespace AngryBomb3D
                 newPos.x = currentElementLeftPos + width * 0.35f;
                 newPos.y = bottomPos + 3.3f;
                 if(EnumsAndVars::currentBulletSetIndex == i)
-                    newPos.y += 2.0f;
+                    newPos.y += 1.0f;
                 if(newPos != EnumsAndVars::notEmptyBulletsSets[i]->textBulletsCount->getPositionInPercents())
                 {
                     BR_INFO("%s", "Update text count pos.");
