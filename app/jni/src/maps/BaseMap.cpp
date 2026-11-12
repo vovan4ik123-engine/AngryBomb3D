@@ -522,7 +522,8 @@ namespace AngryBomb3D
 
     void BaseMap::handleWinLose()
     {
-        if(BaseEnemy::getActiveCount() <= 0 && !getIsDynamicObjectsActive())
+        if(BaseEnemy::getAliveEnemiesCount() <= 0 &&
+           (BaseEnemy::getAllEnemiesKilledTime() + 3.0f < EnumsAndVars::mapPlayTimeSec || !getIsDynamicObjectsActive()))
         {
             EnumsAndVars::mapPlayerWin = true;
             EnumsAndVars::mapPlayerLose = false;
@@ -537,7 +538,7 @@ namespace AngryBomb3D
         }
         else if(EnumsAndVars::notEmptyBulletsSets.empty() &&
                 EnumsAndVars::emptyBulletsSetsWithActiveBullets.empty() &&
-                BaseEnemy::getActiveCount() > 0 && !getIsDynamicObjectsActive())
+                BaseEnemy::getAliveEnemiesCount() > 0 && !getIsDynamicObjectsActive())
         {
             EnumsAndVars::mapPlayerWin = false;
             EnumsAndVars::mapPlayerLose = true;

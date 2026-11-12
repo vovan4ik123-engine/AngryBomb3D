@@ -12,11 +12,11 @@ namespace AngryBomb3D
 
         static void resetCounts()
         {
-            m_activeCount = 0;
-            m_allCount = 0;
+            m_aliveEnemiesCount = 0;
+            m_allEnemiesKilledTime = 0.0f;
         }
-        static int getActiveCount() { return m_activeCount; }
-        static int getAllCount() { return m_allCount; }
+        static int getAliveEnemiesCount() { return m_aliveEnemiesCount; }
+        static float getAllEnemiesKilledTime () { return m_allEnemiesKilledTime; }
 
         void update();
         std::shared_ptr<Beryll::SimpleCollidingObject> getObj() const { return m_obj; }
@@ -24,8 +24,8 @@ namespace AngryBomb3D
     private:
         std::shared_ptr<Beryll::SimpleCollidingObject> m_obj;
         glm::vec3 m_startPosition{0.0f};
-        static int m_activeCount;
-        static int m_allCount;
+        static int m_aliveEnemiesCount;
+        static float m_allEnemiesKilledTime;
 
         void die();
         bool m_isDead = false;

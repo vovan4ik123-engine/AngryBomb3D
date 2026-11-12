@@ -3,16 +3,15 @@
 
 namespace AngryBomb3D
 {
-    int BaseEnemy::m_activeCount = 0;
-    int BaseEnemy::m_allCount = 0;
+    int BaseEnemy::m_aliveEnemiesCount = 0;
+    float BaseEnemy::m_allEnemiesKilledTime = 0.0f;
 
     BaseEnemy::BaseEnemy(std::shared_ptr<Beryll::SimpleCollidingObject> obj)
     {
         m_obj = std::move(obj);
         m_startPosition = m_obj->getOrigin();
 
-        ++m_activeCount;
-        ++m_allCount;
+        ++m_aliveEnemiesCount;
     }
 
     BaseEnemy::~BaseEnemy()
@@ -80,7 +79,9 @@ namespace AngryBomb3D
                                               Beryll::RandomGenerator::getFloat() * 2.5f + 2.5f);
 
         m_obj->disableForEver();
-        --m_activeCount;
+        --m_aliveEnemiesCount;
         m_isDead = true;
+        if(m_aliveEnemiesCount <= 0)
+            m_allEnemiesKilledTime = EnumsAndVars::mapPlayTimeSec;
     }
 }
