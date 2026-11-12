@@ -63,6 +63,17 @@ namespace AngryBomb3D
                                                                       glm::vec3{87.5f, 29.0f, 0.6f}, glm::vec2{11.0f, 12.0f}, false, false, false);
         m_guiObjects.push_back(m_buttonNextMap);
 
+        // Tutorial.
+        if(EnumsAndVars::MapsProgress::currentMapIndex == 1)
+        {
+            m_tutorialSliderPower = std::make_shared<Beryll::GUITexture>("GUI/playState/tutorial/TutorialSliderPower.png",
+                                                                         glm::vec3{11.0f, 40.0f, 0.1f}, glm::vec2{6.0f, 40.0f}, false);
+            m_tutorialCamera = std::make_shared<Beryll::GUITexture>("GUI/playState/tutorial/TutorialCamera.png",
+                                                                    glm::vec3{67.0f, 30.0f, 0.1f}, glm::vec2{26.0f, 40.0f}, false);
+            m_tutorialShot = std::make_shared<Beryll::GUITexture>("GUI/playState/tutorial/TutorialShot.png",
+                                                                  glm::vec3{18.0f, 45.0f, 0.1f}, glm::vec2{4.0f, 30.0f}, false);
+        }
+
         // Sort to update nearest objects first. But draw should starts from farest object(in reverse order).
         std::sort(m_guiObjects.begin(), m_guiObjects.end(), [](std::shared_ptr<Beryll::GUIObject> o1, std::shared_ptr<Beryll::GUIObject> o2)
         {
@@ -181,6 +192,56 @@ namespace AngryBomb3D
 
     void PlayStateGUILayer::draw()
     {
+        // Tutorial.
+        if(EnumsAndVars::MapsProgress::currentMapIndex == 1 && !m_tutorialShotPressed)
+        {
+            if(!m_tutorialSliderChangedValue)
+            {
+                glm::vec3 currPos = m_tutorialSliderPower->getPositionInPercents();
+                m_tutorialSliderPowerPosY = currPos.y;
+                m_tutorialSliderPowerPosY += 20.0f * Beryll::TimeStep::getTimeStepSec();
+                if(m_tutorialSliderPowerPosY > 60.0f)
+                    m_tutorialSliderPowerPosY = 40.0f;
+
+                currPos.y = m_tutorialSliderPowerPosY;
+                m_tutorialSliderPower->updatePositionInPercents(currPos);
+
+                m_tutorialSliderPower->draw();
+
+                if(sliderPower->getValue() > 0.7f)
+                    m_tutorialSliderChangedValue = true;
+            }
+            else if(!m_tutorialCameraRotated)
+            {
+                m_tutorialCamera->draw();
+
+                for(const Beryll::Finger& f : Beryll::EventHandler::getFingers())
+                {
+                    if(f.normalizedPos.x > 0.55f)
+                    {
+                        m_tutorialCameraRotated = true;
+                        m_tutorialCameraRotatedTime = EnumsAndVars::mapPlayTimeSec;
+                    }
+                }
+            }
+            else if(m_tutorialCameraRotatedTime + 2.0f < EnumsAndVars::mapPlayTimeSec)
+            {
+                glm::vec3 currPos = m_tutorialShot->getPositionInPercents();
+                m_tutorialShotPosY = currPos.y;
+                m_tutorialShotPosY -= 8.0f * Beryll::TimeStep::getTimeStepSec();
+                if(m_tutorialShotPosY < 35.0f)
+                    m_tutorialShotPosY = 45.0f;
+
+                currPos.y = m_tutorialShotPosY;
+                m_tutorialShot->updatePositionInPercents(currPos);
+
+                m_tutorialShot->draw();
+
+                if(buttonShot->getIsPressed())
+                    m_tutorialShotPressed = true;
+            }
+        }
+
         for(auto it = m_guiObjects.rbegin(); it != m_guiObjects.rend(); ++it)
         {
             if((*it)->getIsEnabled())
