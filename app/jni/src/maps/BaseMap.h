@@ -89,7 +89,7 @@ namespace AngryBomb3D
         virtual void explodeDynamite(const DynamiteInfo& dynamite);
         void handleWinLose();
         void handleCamera();
-        bool getIsEnvObjectsMoves();
+        bool getIsDynamicObjectsActive();
         void updateSunPosition(const glm::vec3& pos);
     };
 }

@@ -522,7 +522,7 @@ namespace AngryBomb3D
 
     void BaseMap::handleWinLose()
     {
-        if(BaseEnemy::getActiveCount() <= 0 /*&& !getIsEnvObjectsMoves()*/)
+        if(BaseEnemy::getActiveCount() <= 0 && !getIsDynamicObjectsActive())
         {
             EnumsAndVars::mapPlayerWin = true;
             EnumsAndVars::mapPlayerLose = false;
@@ -535,18 +535,27 @@ namespace AngryBomb3D
                 DataBaseHelper::storeMapsProgressLastOpenedMapIndex(EnumsAndVars::MapsProgress::lastOpenedMapIndex);
             }
         }
+        else if(EnumsAndVars::notEmptyBulletsSets.empty() &&
+                EnumsAndVars::emptyBulletsSetsWithActiveBullets.empty() &&
+                BaseEnemy::getActiveCount() > 0 && !getIsDynamicObjectsActive())
+        {
+            EnumsAndVars::mapPlayerWin = false;
+            EnumsAndVars::mapPlayerLose = true;
+            //SendStatisticsHelper::sendMapLose();
+        }
     }
 
-    bool BaseMap::getIsEnvObjectsMoves()
+    bool BaseMap::getIsDynamicObjectsActive()
     {
-        const float farthestDistanceSquared = (m_player->getFarthestPointDistance() * 1.5f) * (m_player->getFarthestPointDistance() * 1.5f);
+        const float farthestDistanceSquared = m_player->getFarthestPointDistance() * m_player->getFarthestPointDistance();
         for(const std::shared_ptr<Beryll::BaseSimpleObject>& so : m_allSimpleEnv)
         {
             if(so->getIsEnabledUpdate() &&
                so->getCollisionFlag() == Beryll::CollisionFlags::DYNAMIC &&
                so->getSceneObjectGroup() != EnumsAndVars::SceneGR_PLAYER_BULLET &&
                glm::distance2(glm::vec3{0.0f}, so->getOrigin()) < farthestDistanceSquared &&
-               (glm::distance2(glm::vec3{0.0f}, so->getLinearVelocity()) > 1.0f || glm::distance2(glm::vec3{0.0f}, so->getAngularVelocity()) > 1.0f))
+               so->getIsActive())
+               //(glm::distance2(glm::vec3{0.0f}, so->getLinearVelocity()) > 1.0f || glm::distance2(glm::vec3{0.0f}, so->getAngularVelocity()) > 1.0f))
             {
                 return true;
             }
