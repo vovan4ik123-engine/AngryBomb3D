@@ -44,10 +44,12 @@ namespace AngryBomb3D
         std::shared_ptr<Beryll::GUITexture> m_tutorialSliderPower;
         std::shared_ptr<Beryll::GUITexture> m_tutorialCamera;
         std::shared_ptr<Beryll::GUITexture> m_tutorialShot;
+        std::shared_ptr<Beryll::GUITexture> m_tutorialWinLoseMenu;
         bool m_tutorialSliderChangedValue = false;
         bool m_tutorialCameraRotated = false;
         bool m_tutorialShotPressed = false;
         float m_tutorialSliderPowerPosY = 0.0f;
+        float m_tutorialWinLoseMenuPosY = 0.0f;
         float m_tutorialShotPosY = 0.0f;
         float m_tutorialCameraRotatedTime = 0.0f;
     };

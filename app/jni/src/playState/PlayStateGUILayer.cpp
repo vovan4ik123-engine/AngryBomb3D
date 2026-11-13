@@ -67,11 +67,13 @@ namespace AngryBomb3D
         if(EnumsAndVars::MapsProgress::currentMapIndex == 1)
         {
             m_tutorialSliderPower = std::make_shared<Beryll::GUITexture>("GUI/playState/tutorial/TutorialSliderPower.png",
-                                                                         glm::vec3{11.0f, 40.0f, 0.1f}, glm::vec2{6.0f, 40.0f}, false);
+                                                                         glm::vec3{11.0f, 45.0f, 0.1f}, glm::vec2{6.0f, 35.0f}, false);
             m_tutorialCamera = std::make_shared<Beryll::GUITexture>("GUI/playState/tutorial/TutorialCamera.png",
-                                                                    glm::vec3{67.0f, 30.0f, 0.1f}, glm::vec2{26.0f, 40.0f}, false);
+                                                                    glm::vec3{66.0f, 30.0f, 0.1f}, glm::vec2{26.0f, 40.0f}, false);
             m_tutorialShot = std::make_shared<Beryll::GUITexture>("GUI/playState/tutorial/TutorialShot.png",
-                                                                  glm::vec3{18.0f, 45.0f, 0.1f}, glm::vec2{4.0f, 30.0f}, false);
+                                                                  glm::vec3{18.0f, 45.0f, 0.1f}, glm::vec2{4.0f, 25.0f}, false);
+            m_tutorialWinLoseMenu = std::make_shared<Beryll::GUITexture>("GUI/playState/tutorial/TutorialWinLoseMenu.png",
+                                                                         glm::vec3{71.0f, 70.0f, 0.1f}, glm::vec2{16.0f, 30.0f}, false);
         }
 
         // Sort to update nearest objects first. But draw should starts from farest object(in reverse order).
@@ -98,6 +100,9 @@ namespace AngryBomb3D
 
         if(sliderPower->getValue() < 0.12f)
             sliderPower->setValue(0.12f);
+
+        if(buttonShot->getIsPressed())
+            m_tutorialShotPressed = true;
 
         if(m_statisticsShow && Beryll::TimeStep::getMilliSecFromStart() > m_statisticsUpdateTime + 200) // Update every 200 ms.
         {
@@ -193,15 +198,15 @@ namespace AngryBomb3D
     void PlayStateGUILayer::draw()
     {
         // Tutorial.
-        if(EnumsAndVars::MapsProgress::currentMapIndex == 1 && !m_tutorialShotPressed)
+        if(EnumsAndVars::MapsProgress::currentMapIndex == 1)
         {
             if(!m_tutorialSliderChangedValue)
             {
                 glm::vec3 currPos = m_tutorialSliderPower->getPositionInPercents();
                 m_tutorialSliderPowerPosY = currPos.y;
                 m_tutorialSliderPowerPosY += 20.0f * Beryll::TimeStep::getTimeStepSec();
-                if(m_tutorialSliderPowerPosY > 60.0f)
-                    m_tutorialSliderPowerPosY = 40.0f;
+                if(m_tutorialSliderPowerPosY > 63.0f)
+                    m_tutorialSliderPowerPosY = 43.0f;
 
                 currPos.y = m_tutorialSliderPowerPosY;
                 m_tutorialSliderPower->updatePositionInPercents(currPos);
@@ -224,11 +229,11 @@ namespace AngryBomb3D
                     }
                 }
             }
-            else if(m_tutorialCameraRotatedTime + 2.0f < EnumsAndVars::mapPlayTimeSec)
+            else if(!m_tutorialShotPressed && m_tutorialCameraRotatedTime + 1.5f < EnumsAndVars::mapPlayTimeSec)
             {
                 glm::vec3 currPos = m_tutorialShot->getPositionInPercents();
                 m_tutorialShotPosY = currPos.y;
-                m_tutorialShotPosY -= 8.0f * Beryll::TimeStep::getTimeStepSec();
+                m_tutorialShotPosY -= 10.0f * Beryll::TimeStep::getTimeStepSec();
                 if(m_tutorialShotPosY < 35.0f)
                     m_tutorialShotPosY = 45.0f;
 
@@ -236,9 +241,22 @@ namespace AngryBomb3D
                 m_tutorialShot->updatePositionInPercents(currPos);
 
                 m_tutorialShot->draw();
+            }
 
-                if(buttonShot->getIsPressed())
-                    m_tutorialShotPressed = true;
+            if(EnumsAndVars::mapPlayerWin || EnumsAndVars::mapPlayerLose)
+            {
+                glm::vec3 currPos = m_tutorialWinLoseMenu->getPositionInPercents();
+                m_tutorialWinLoseMenuPosY = currPos.y;
+                m_tutorialWinLoseMenuPosY -= 30.0f * Beryll::TimeStep::getTimeStepSec();
+                if(EnumsAndVars::mapPlayerLose && m_tutorialWinLoseMenuPosY < 44.0f)
+                    m_tutorialWinLoseMenuPosY = 71.0f;
+                if(EnumsAndVars::mapPlayerWin && m_tutorialWinLoseMenuPosY < 29.0f)
+                    m_tutorialWinLoseMenuPosY = 71.0f;
+
+                currPos.y = m_tutorialWinLoseMenuPosY;
+                m_tutorialWinLoseMenu->updatePositionInPercents(currPos);
+
+                m_tutorialWinLoseMenu->draw();
             }
         }
 
